@@ -1,7 +1,9 @@
 "use client";
 import axios from "axios";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { MdArrowBack } from "react-icons/md";
 
 function Upload() {
   const [title, setTitle] = useState("");
@@ -45,7 +47,13 @@ function Upload() {
   };
 
   return (
-    <div className="bg-hover w-full h-screen flex items-center justify-center">
+    <div className="bg-hover w-full h-screen flex items-center justify-center relative">
+      <button className="px-4 py-2 absolute left-5 top-5 font-semibold bg-primary-button hover:bg-secondary-button duration-300">
+        <Link href="/" className="flex items-center gap-2">
+        <MdArrowBack/>
+        Back
+        </Link>
+        </button>
       <div className="bg-background-theme max-w-[480px] w-[90%] flex flex-col items-center px-6 lg:px-12 py-6 rounded-md ">
         <Image
           src="/images/logo.png"

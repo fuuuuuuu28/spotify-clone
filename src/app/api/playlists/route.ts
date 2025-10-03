@@ -3,9 +3,17 @@ import { connectionToDatabase } from "@/lib/mongoose";
 import { Playlist } from "@/models/Song";
 import { NextResponse } from "next/server";
 
+// let isConnected = false;
+// async function ensureConnection() {
+//   if (isConnected) {
+//     await connectionToDatabase();
+//     isConnected = true;
+//   }
+// }
+
 export async function POST(req: Request) {
   try {
-    await connectionToDatabase();
+    // await ensureConnection();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -33,7 +41,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    await connectionToDatabase();
+    // await ensureConnection();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -59,7 +67,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    await connectionToDatabase();
+    // await ensureConnection();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -2,9 +2,16 @@ import { connectionToDatabase } from "@/lib/mongoose";
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
-import {Song} from "@/models/Song";
+import { Song } from "@/models/Song";
 import { auth } from "@/lib/auth";
 
+// let isConnected = false;
+// async function ensureConnection() {
+//   if (isConnected) {
+//     await connectionToDatabase();
+//     isConnected = true;
+//   }
+// }
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -69,6 +76,9 @@ export async function GET(req: Request) {
     return NextResponse.json({ message: "Get songs", songs });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Get songs server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Get songs server error" },
+      { status: 500 }
+    );
   }
 }
