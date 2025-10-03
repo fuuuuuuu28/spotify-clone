@@ -1,15 +1,6 @@
 import { auth } from "@/lib/auth";
-import { connectionToDatabase } from "@/lib/mongoose";
 import { Playlist } from "@/models/Song";
 import { NextResponse } from "next/server";
-
-// let isConnected = false;
-// async function ensureConnection() {
-//   if (isConnected) {
-//     await connectionToDatabase();
-//     isConnected = true;
-//   }
-// }
 
 export async function POST(req: Request) {
   try {

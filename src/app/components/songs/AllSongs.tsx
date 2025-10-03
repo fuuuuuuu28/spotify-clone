@@ -1,8 +1,6 @@
 "use client";
 import { auth } from "@/lib/auth";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Song } from "@/types/type";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";

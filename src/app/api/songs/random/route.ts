@@ -1,15 +1,6 @@
-import { connectionToDatabase } from "@/lib/mongoose";
 import {Song} from "@/models/Song";
 import { NextResponse } from "next/server";
 import React from "react";
-
-// let isConnected = false;
-// async function ensureConnection() {
-//   if (isConnected) {
-//     await connectionToDatabase();
-//     isConnected = true;
-//   }
-// }
 
 export async function GET(req: Request) {
   try {

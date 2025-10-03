@@ -13,7 +13,7 @@ import { FaTrash } from "react-icons/fa";
 
 type Session = typeof auth.$Infer.Session;
 function Sidebar({ session }: { session: Session | null }) {
-  const { fetchSongs, songs, playlist, fetchPlaylist, setCurrentSong, deleteSong } =
+  const { fetchSongs, playlist, fetchPlaylist, setCurrentSong, deleteSong } =
     usePlayerStore();
 
   const [isOpen, setIsOpen] = useState(false);

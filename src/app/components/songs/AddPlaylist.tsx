@@ -1,15 +1,12 @@
 import React, { useEffect } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import axios from "axios";
 import { LuPlus } from "react-icons/lu";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import Image from "next/image";

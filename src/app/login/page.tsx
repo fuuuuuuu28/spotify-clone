@@ -3,18 +3,16 @@
 import { signIn } from "@/lib/actions/auth-actions";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { createAuthClient } from "better-auth/client";
 
 function Login() {
-  const navigate = useRouter();
   const authClient = createAuthClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await signIn(email, password);
   };
