@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import { LuPlus } from "react-icons/lu";
 import RandomSongs from "./RandomSongs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Session = typeof auth.$Infer.Session;
 function AllSongs({ session }: { session: Session | null }) {
@@ -16,22 +17,22 @@ function AllSongs({ session }: { session: Session | null }) {
     currentSong,
     setCurrentSong,
     isPlaying,
+    isLoading,
   } = usePlayerStore();
 
-  const [loading, setLoading] = useState(false);
-
+  const arraySkeleton = Array.from({ length: 5 });
   useEffect(() => {
     fetchSongs();
     // console.log("session: ",session)
   }, [fetchSongs]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-primary-text">
-        Loading songs...
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen text-primary-text">
+  //       Loading songs...
+  //     </div>
+  //   );
+  // }
   return (
     <div className="min-h-[90vh] my-16 bg-background-theme ml-24 mr-2 md:ml-80 rounded-lg overflow-y-auto overflow-x-hidden">
       <div className="min-h-[50vh] bg-gradient-to-b from-emerald-500 to-background-theme px-8 py-4">
@@ -94,33 +95,49 @@ function AllSongs({ session }: { session: Session | null }) {
         Music for you
       </h2>
       <div className="flex overflow-x-auto gap-2 px-4 py-2 scroll">
-        {songs.map((song) => (
-          <div
-            key={song._id}
-            onClick={() => setCurrentSong(song)}
-            className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
-          >
-            <div className="relative w-full aspect-square">
-              <Image
-                alt="music"
-                src={song.imageUrl}
-                className="w-40 h-40 rounded-lg"
-                width={500}
-                height={500}
-              />
-              <button className="bottom-1 right-1 opacity-0 absolute bg-primary-button text-black text-lg p-3 rounded-full group-hover:bottom-3 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:scale-110 cursor-pointer">
-                <FaPlay />
-              </button>
-            </div>
-            <span className="block w-full text-secondary-text font-semibold truncate pr-1">
-              {song.title}
-            </span>
-          </div>
-        ))}
+        {isLoading ? (
+          <>
+            {arraySkeleton.map((_,index) => (
+              <div
+                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
+              >
+                <div className="relative w-full aspect-square">
+                  <Skeleton className="w-40 h-40"/>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {songs.map((song) => (
+              <div
+                key={song._id}
+                onClick={() => setCurrentSong(song)}
+                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
+              >
+                <div className="relative w-full aspect-square">
+                  <Image
+                    alt="music"
+                    src={song.imageUrl}
+                    className="w-40 h-40 rounded-lg"
+                    width={500}
+                    height={500}
+                  />
+                  <button className="bottom-1 right-1 opacity-0 absolute bg-primary-button text-black text-lg p-3 rounded-full group-hover:bottom-3 group-hover:opacity-100 transition-all duration-300 ease-in-out hover:scale-110 cursor-pointer">
+                    <FaPlay />
+                  </button>
+                </div>
+                <span className="block w-full text-secondary-text font-semibold truncate pr-1">
+                  {song.title}
+                </span>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       {/*Random Music */}
-      <RandomSongs/>
+      <RandomSongs />
     </div>
   );
 }

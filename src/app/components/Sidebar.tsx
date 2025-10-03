@@ -10,26 +10,28 @@ import AddPlaylist from "./songs/AddPlaylist";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { FaTrash } from "react-icons/fa";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Session = typeof auth.$Infer.Session;
 function Sidebar({ session }: { session: Session | null }) {
-  const { fetchSongs, playlist, fetchPlaylist, setCurrentSong, deleteSong } =
-    usePlayerStore();
+  const {
+    fetchSongs,
+    playlist,
+    fetchPlaylist,
+    setCurrentSong,
+    deleteSong,
+    isLoading,
+  } = usePlayerStore();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  const arraySkeleton = Array.from({ length: 5 });
+
   useEffect(() => {
     fetchSongs();
     fetchPlaylist();
   }, [fetchSongs, fetchPlaylist]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-primary-text">
-        Loading songs...
-      </div>
-    );
-  }
   return (
     <>
       <aside
@@ -68,36 +70,53 @@ function Sidebar({ session }: { session: Session | null }) {
         {/* Playlists */}
         {session ? (
           <>
-            {playlist?.songs.map((song) => (
-                <div
-                  key={song._id}
-                  className={`flex ${
-                    isOpen ? "flex-row" : "flex-row-reverse"
-                  } md:flex-row md:items-center justify-between  `}
-                >
-                  <div className="flex items-center rounded-lg w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
-                    <Image
-                      alt="cover-5"
-                      src={song.imageUrl}
-                      width={500}
-                      height={500}
-                      onClick={() => setCurrentSong(song)}
-                      className="size-16 rounded-lg"
-                    />
-                    <div className="">
-                      <h2 className="text-primary-text text-lg font-semibold">
-                        {song.title}{" "}
-                      </h2>
-                      <span className="text-secondary-text text-sm">
-                        {song.artist}
-                      </span>
+            {isLoading ? (
+              <>
+                {arraySkeleton.map((_, index) => (
+                  <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
+                    <div className="relative w-full aspect-square">
+                      <Skeleton className="w-40 h-40" />
                     </div>
                   </div>
-                  <div onClick={() => deleteSong(song._id)} className="hover:bg-hover rounded-full p-4 duration-300 cursor-pointer">
-                    <FaTrash className="text-primary-text "/>
+                ))}
+              </>
+            ) : (
+              <>
+                {playlist?.songs.map((song) => (
+                  <div
+                    key={song._id}
+                    className={`flex ${
+                      isOpen ? "flex-row" : "flex-row-reverse"
+                    } md:flex-row md:items-center justify-between  `}
+                  >
+                    <div className="flex items-center rounded-lg w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
+                      <Image
+                        alt="cover-5"
+                        src={song.imageUrl}
+                        width={500}
+                        height={500}
+                        onClick={() => setCurrentSong(song)}
+                        className="size-16 rounded-lg"
+                      />
+                      <div className="">
+                        <h2 className="text-primary-text text-lg font-semibold">
+                          {song.title}{" "}
+                        </h2>
+                        <span className="text-secondary-text text-sm">
+                          {song.artist}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      onClick={() => deleteSong(song._id)}
+                      className="hover:bg-hover rounded-full p-4 duration-300 cursor-pointer"
+                    >
+                      <FaTrash className="text-primary-text " />
+                    </div>
                   </div>
-                </div>
-            ))}
+                ))}
+              </>
+            )}
           </>
         ) : (
           <div className="flex flex-col items-center justify-center space-y-3">
