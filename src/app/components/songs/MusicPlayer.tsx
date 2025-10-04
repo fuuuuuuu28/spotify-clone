@@ -41,7 +41,10 @@ function MusicPlayer() {
   }, [isPlaying, currentSong]);
 
   const handlePlay = () => {
-    setIsPlaying(!isPlaying);
+    if(currentSong){
+      setIsPlaying(!isPlaying);
+    }
+
   };
 
   const handleUpdateTime = () => {
@@ -62,7 +65,7 @@ function MusicPlayer() {
 
   const handleNext = () => {
     const currentIndex = songs.findIndex((s) => s._id === currentSong?._id);
-    const nextIndex = (currentIndex + 1) & songs.length;
+    const nextIndex = (currentIndex + 1) % songs.length;
     setCurrentSong(songs[nextIndex]);
   };
 

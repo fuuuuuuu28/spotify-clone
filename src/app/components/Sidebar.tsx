@@ -73,9 +73,17 @@ function Sidebar({ session }: { session: Session | null }) {
             {isLoading ? (
               <>
                 {arraySkeleton.map((_, index) => (
-                  <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
-                    <div className="relative w-full aspect-square">
-                      <Skeleton className="w-40 h-40" />
+                  <div
+                    className={`flex ${
+                      isOpen ? "flex-row" : "flex-row-reverse"
+                    } md:flex-row md:items-center justify-between  `}
+                  >
+                    <div className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
+                      <Skeleton className="size-16 rounded-lg" />
+                      <div className={`md:block ${isOpen ? "" : "hidden"} space-y-2`}>
+                        <Skeleton className="w-36 h-5" />
+                        <Skeleton className="w-20 h-5" />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -89,7 +97,7 @@ function Sidebar({ session }: { session: Session | null }) {
                       isOpen ? "flex-row" : "flex-row-reverse"
                     } md:flex-row md:items-center justify-between  `}
                   >
-                    <div className="flex items-center rounded-lg w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
+                    <div className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
                       <Image
                         alt="cover-5"
                         src={song.imageUrl}
@@ -98,7 +106,7 @@ function Sidebar({ session }: { session: Session | null }) {
                         onClick={() => setCurrentSong(song)}
                         className="size-16 rounded-lg"
                       />
-                      <div className="">
+                      <div className={`md:block ${isOpen ? "" : "hidden"} space-y-2`}>
                         <h2 className="text-primary-text text-lg font-semibold">
                           {song.title}{" "}
                         </h2>

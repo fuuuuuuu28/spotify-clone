@@ -14,6 +14,7 @@ import { auth } from "@/lib/auth";
 // }
 export async function POST(req: Request) {
   try {
+    console.log("1")
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,14 +22,14 @@ export async function POST(req: Request) {
     const userId = session.user.id;
 
     await connectionToDatabase();
-
+    console.log("2")
     const formData = await req.formData();
     const title = formData.get("title") as string;
     const artist = formData.get("artist") as string;
 
     const image = formData.get("imageFile") as File;
     const audio = formData.get("audioFile") as File;
-
+    console.log("3")
     if (!title || !artist || !userId || !image || !audio) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }

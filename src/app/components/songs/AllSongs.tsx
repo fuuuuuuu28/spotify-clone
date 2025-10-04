@@ -64,7 +64,7 @@ function AllSongs({ session }: { session: Session | null }) {
               <Image
                 alt="music"
                 src={currentSong.imageUrl}
-                className={`size-50 rounded-full spin-slow ${
+                className={`size-50 rounded-full border-4 border-black spin-slow ${
                   isPlaying ? "" : "paused"
                 }`}
                 width={500}
@@ -80,15 +80,17 @@ function AllSongs({ session }: { session: Session | null }) {
           </>
         )}
       </div>
-      <div className="flex px-8 py-2">
-        <Link
-          href="/upload-song"
-          className="flex items-center bg-primary-text text-background-theme font-semibold text-xs rounded-full px-4 py-2 gap-2 hover:bg-secondary-text duration-300 hover:scale-105"
-        >
-          <h2 className="text-background-theme">Add your song</h2>
-          <LuPlus className="text-background-theme" />
-        </Link>
-      </div>
+      {session && (
+        <div className="flex px-8 py-2">
+          <Link
+            href="/upload-song"
+            className="flex items-center bg-primary-text text-background-theme font-semibold text-xs rounded-full px-4 py-2 gap-2 hover:bg-secondary-text duration-300 hover:scale-105"
+          >
+            <h2 className="text-background-theme">Add your song</h2>
+            <LuPlus className="text-background-theme" />
+          </Link>
+        </div>
+      )}
 
       {/* Music */}
       <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
@@ -97,12 +99,10 @@ function AllSongs({ session }: { session: Session | null }) {
       <div className="flex overflow-x-auto gap-2 px-4 py-2 scroll">
         {isLoading ? (
           <>
-            {arraySkeleton.map((_,index) => (
-              <div
-                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
-              >
+            {arraySkeleton.map((_, index) => (
+              <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
                 <div className="relative w-full aspect-square">
-                  <Skeleton className="w-40 h-40"/>
+                  <Skeleton className="w-40 h-40" />
                 </div>
               </div>
             ))}
