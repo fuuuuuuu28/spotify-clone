@@ -80,7 +80,11 @@ function Sidebar({ session }: { session: Session | null }) {
                   >
                     <div className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
                       <Skeleton className="size-16 rounded-lg" />
-                      <div className={`md:block ${isOpen ? "" : "hidden"} space-y-2`}>
+                      <div
+                        className={`md:block ${
+                          isOpen ? "" : "hidden"
+                        } space-y-2`}
+                      >
                         <Skeleton className="w-36 h-5" />
                         <Skeleton className="w-20 h-5" />
                       </div>
@@ -97,16 +101,22 @@ function Sidebar({ session }: { session: Session | null }) {
                       isOpen ? "flex-row" : "flex-row-reverse"
                     } md:flex-row md:items-center justify-between  `}
                   >
-                    <div className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer">
+                    <div
+                      onClick={() => setCurrentSong(song)}
+                      className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer"
+                    >
                       <Image
                         alt="cover-5"
                         src={song.imageUrl}
                         width={500}
                         height={500}
-                        onClick={() => setCurrentSong(song)}
                         className="size-16 rounded-lg"
                       />
-                      <div className={`md:block ${isOpen ? "" : "hidden"} space-y-2`}>
+                      <div
+                        className={`md:block ${
+                          isOpen ? "" : "hidden"
+                        } space-y-2`}
+                      >
                         <h2 className="text-primary-text text-lg font-semibold">
                           {song.title}{" "}
                         </h2>

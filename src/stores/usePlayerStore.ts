@@ -103,7 +103,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
       console.log("deleteSong store error: ", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: true });
+      set({ isLoading: false });
     }
   },
 }));
