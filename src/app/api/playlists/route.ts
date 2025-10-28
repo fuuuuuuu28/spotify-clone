@@ -1,19 +1,34 @@
 import { auth } from "@/lib/auth";
-import { Playlist } from "@/models/Song";
+import { connectionToDatabase } from "@/lib/mongoose";
+import { Playlist, Song } from "@/models/Song";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    // await ensureConnection();
+    await connectionToDatabase();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = session.user.id;
-    const { songId } = await req.json();
+    const { song } = await req.json();
+
+    let existingSong = await Song.findOne({ _id: song._id})
+    // console.log("first")
+    if(!existingSong){
+      existingSong = await Song.create({
+        name_music:song.name_music,
+        name_singer: song.name_singer,
+        image_music: song.image_music,
+        src_music: song.src_music,
+        user_id: userId,
+        
+      })
+    }
+    // console.log("asd", existingSong)
     const playlistPOST = await Playlist.findOneAndUpdate(
       { user_id: userId },
-      { $addToSet: { songs: songId } },
+      { $addToSet: { songs: existingSong._id } },
       { new: true, upsert: true }
     ).populate("songs");
 
@@ -32,7 +47,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    // await ensureConnection();
+    await connectionToDatabase();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -58,7 +73,7 @@ export async function GET(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
-    // await ensureConnection();
+    await connectionToDatabase();
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

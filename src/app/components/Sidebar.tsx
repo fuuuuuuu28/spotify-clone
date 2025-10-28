@@ -28,7 +28,7 @@ function Sidebar({ session }: { session: Session | null }) {
   const arraySkeleton = Array.from({ length: 5 });
 
   useEffect(() => {
-    fetchSongs();
+    fetchSongs;
     fetchPlaylist();
   }, [fetchSongs, fetchPlaylist]);
 
@@ -107,7 +107,7 @@ function Sidebar({ session }: { session: Session | null }) {
                     >
                       <Image
                         alt="cover-5"
-                        src={song.imageUrl}
+                        src={song.image_music}
                         width={500}
                         height={500}
                         className="size-16 rounded-lg"
@@ -118,10 +118,10 @@ function Sidebar({ session }: { session: Session | null }) {
                         } space-y-2`}
                       >
                         <h2 className="text-primary-text text-lg font-semibold">
-                          {song.title}{" "}
+                          {song.name_music}{" "}
                         </h2>
                         <span className="text-secondary-text text-sm">
-                          {song.artist}
+                          {song.name_singer}
                         </span>
                       </div>
                     </div>
@@ -159,7 +159,7 @@ function Sidebar({ session }: { session: Session | null }) {
                 <Image
                   key={song._id}
                   alt="playlist"
-                  src={song.imageUrl}
+                  src={song.image_music}
                   width={30}
                   height={30}
                 />

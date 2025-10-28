@@ -1,10 +1,11 @@
+import { connectionToDatabase } from "@/lib/mongoose";
 import {Song} from "@/models/Song";
 import { NextResponse } from "next/server";
 import React from "react";
 
 export async function GET(req: Request) {
   try {
-    // await ensureConnection;
+    await connectionToDatabase();
     const { searchParams } = new URL(req.url);
     const limit = Number(searchParams.get("limit")) || 10;
 

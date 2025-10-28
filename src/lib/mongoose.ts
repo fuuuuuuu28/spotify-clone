@@ -14,6 +14,7 @@ if(!cached){
 
 export const connectionToDatabase = async () =>{
     if(cached.conn){
+        console.log("✅ Using cached MongoDB connection");
         return cached.conn;
     }
     if(!cached.promise){

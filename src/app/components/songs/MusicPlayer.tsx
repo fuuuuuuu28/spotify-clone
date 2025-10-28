@@ -16,8 +16,15 @@ import { FaRepeat } from "react-icons/fa6";
 import { MdQueueMusic } from "react-icons/md";
 
 function MusicPlayer() {
-  const { currentSong, isPlaying, setIsPlaying, songs, setCurrentSong } =
-    usePlayerStore();
+  const {
+    currentSong,
+    isPlaying,
+    setIsPlaying,
+    songs,
+    setCurrentSong,
+    songsAPI,
+    currentSongAPI,
+  } = usePlayerStore();
 
   const [process, setProcess] = useState(0);
   const [volume, setVolume] = useState(75);
@@ -38,13 +45,12 @@ function MusicPlayer() {
     } else {
       audioRef.current?.pause();
     }
-  }, [isPlaying, currentSong]);
+  }, [isPlaying, currentSongAPI]);
 
   const handlePlay = () => {
-    if(currentSong){
+    if (currentSongAPI) {
       setIsPlaying(!isPlaying);
     }
-
   };
 
   const handleUpdateTime = () => {
@@ -64,15 +70,15 @@ function MusicPlayer() {
   };
 
   const handleNext = () => {
-    const currentIndex = songs.findIndex((s) => s._id === currentSong?._id);
-    const nextIndex = (currentIndex + 1) % songs.length;
-    setCurrentSong(songs[nextIndex]);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
+    const nextIndex = (currentIndex + 1) % songsAPI.length;
+    setCurrentSong(songsAPI[nextIndex]);
   };
 
   const handlePrev = () => {
-    const currentIndex = songs.findIndex((s) => s._id === currentSong?._id);
-    const prevIndex = (currentIndex - 1 + songs.length) % songs.length;
-    setCurrentSong(songs[prevIndex]);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
+    const prevIndex = (currentIndex - 1 + songsAPI.length) % songsAPI.length;
+    setCurrentSong(songsAPI[prevIndex]);
   };
 
   const handleRepeat = () => {
@@ -84,12 +90,12 @@ function MusicPlayer() {
   };
 
   const handleRandom = () => {
-    const currentIndex = songs.findIndex((s) => s._id === currentSong?._id);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
     let randomIndex;
     do {
-      randomIndex = Math.floor(Math.random() * songs.length);
+      randomIndex = Math.floor(Math.random() * songsAPI.length);
     } while (randomIndex === currentIndex);
-    setCurrentSong(songs[randomIndex]);
+    setCurrentSong(songsAPI[randomIndex]);
   };
 
   const endedAudio = () => {
@@ -126,17 +132,17 @@ function MusicPlayer() {
         <div className="hidden md:flex md:items-center gap-2 ">
           <Image
             alt="cover-11"
-            src={currentSong?.imageUrl || ""}
+            src={currentSongAPI?.image_music || ""}
             className="size-14 rounded-lg object-cover"
             width={500}
             height={500}
           />
           <div className="">
             <h2 className="text-primary-text font-bold line-clamp-1">
-              {currentSong?.artist}
+              {currentSongAPI?.name_singer}
             </h2>
             <span className="text-secondary-text font-semibold">
-              {currentSong?.title}
+              {currentSongAPI?.name_music}
             </span>
           </div>
         </div>
@@ -224,7 +230,7 @@ function MusicPlayer() {
         {/* Audio tag */}
         <audio
           ref={audioRef}
-          src={currentSong?.audioUrl}
+          src={currentSongAPI?.src_music}
           onTimeUpdate={handleUpdateTime}
           onEnded={endedAudio}
         />

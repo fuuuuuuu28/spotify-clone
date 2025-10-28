@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import { FaPlay } from "react-icons/fa";
 
 function RandomSongs() {
-  const { randomSongs, fetchRandomSong, setCurrentSong, isLoading } =
+  const { randomSongsAPI, fetchRandomSong, setCurrentSong, isLoading } =
     usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
@@ -32,16 +32,16 @@ function RandomSongs() {
           </>
         ) : (
           <>
-            {randomSongs.map((song) => (
+            {randomSongsAPI.map((song) => (
               <div
                 key={song._id}
                 onClick={() => setCurrentSong(song)}
-                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
+                className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
-                <div className="relative aspect-square">
+                <div className="relative w-full aspect-square">
                   <Image
                     alt="music"
-                    src={song.imageUrl}
+                    src={song.image_music}
                     className="w-40 h-40 rounded-lg"
                     width={500}
                     height={500}
@@ -51,7 +51,7 @@ function RandomSongs() {
                   </button>
                 </div>
                 <span className="block w-full text-secondary-text font-semibold truncate pr-1">
-                  {song.title}
+                  {song.name_music}
                 </span>
               </div>
             ))}

@@ -18,7 +18,7 @@ function SignUp() {
   return (
     <div className="w-full h-screen bg-background-theme mx-auto flex flex-col items-center justify-center space-y-3">
       <Image alt="logo" src="/images/logo.png" width={40} height={40} />
-      <h1 className="text-primary-text font-bold text-5xl">
+      <h1 className="text-center text-primary-text font-bold text-5xl py-4">
         Sign up to start listening
       </h1>
 

@@ -13,18 +13,18 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 
 function AddPlaylist() {
-  const { songs, playlist, setPlaylist, fetchPlaylist } = usePlayerStore();
+  const { songsAPI, playlist, setPlaylist } = usePlayerStore();
 
   const [currentPage, setCurrentPage] = useState(1);
   const songsPerPage = 5;
 
-  const totalPages = Math.ceil(songs.length / songsPerPage);
+  const totalPages = Math.ceil(songsAPI.length / songsPerPage);
   const startIndex = (currentPage - 1) * songsPerPage;
-  const songsPlaylist = songs.slice(startIndex, startIndex + songsPerPage);
+  const songsPlaylist = songsAPI.slice(startIndex, startIndex + songsPerPage);
 
-  useEffect(() => {
-    fetchPlaylist();
-  }, [fetchPlaylist]);
+  // useEffect(() => {
+  //   fetchPlaylist();
+  // }, [fetchPlaylist]);
 
   const handleNext = () => {
     if (currentPage < totalPages) {
@@ -42,7 +42,7 @@ function AddPlaylist() {
       <DialogTrigger asChild>
         <LuPlus className="text-secondary-text size-12 hover:bg-hover duration-300 rounded-full p-2" />
       </DialogTrigger>
-      <DialogContent className="w-[650px] max-h-[600px] bg-background-theme">
+      <DialogContent className="w-[650px] max-h-[650px] bg-background-theme">
         <DialogHeader>
           <DialogTitle className="text-primary-text">Library</DialogTitle>
           <DialogDescription className="text-secondary-text">
@@ -55,16 +55,16 @@ function AddPlaylist() {
             <div className="flex items-center gap-2">
               <Image
                 alt="songs"
-                src={song.imageUrl}
+                src={song.image_music}
                 className=""
                 width={60}
                 height={60}
               />
               <div className="">
                 <h2 className="text-primary-text font-semibold">
-                  {song.artist}{" "}
+                  {song.name_singer}{" "}
                 </h2>
-                <span className="text-secondary-text">{song.title} </span>
+                <span className="text-secondary-text">{song.name_music} </span>
               </div>
             </div>
           </div>
@@ -75,20 +75,20 @@ function AddPlaylist() {
             <div className="flex items-center gap-2">
               <Image
                 alt="songs"
-                src={song.imageUrl}
+                src={song.image_music}
                 className=""
                 width={60}
                 height={60}
               />
               <div className="">
                 <h2 className="text-primary-text font-semibold">
-                  {song.artist}{" "}
+                  {song.name_singer}{" "}
                 </h2>
-                <span className="text-secondary-text">{song.title} </span>
+                <span className="text-secondary-text">{song.name_music} </span>
               </div>
             </div>
             <button
-              onClick={() => setPlaylist(song._id)}
+              onClick={() => setPlaylist(song)}
               className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
             >
               Add to playlist

@@ -8,31 +8,32 @@ import { FaPlay } from "react-icons/fa";
 import { LuPlus } from "react-icons/lu";
 import RandomSongs from "./RandomSongs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowRight } from "lucide-react";
 
 type Session = typeof auth.$Infer.Session;
 function AllSongs({ session }: { session: Session | null }) {
   const {
+    pages,
+    setPages,
     fetchSongs,
-    songs,
     currentSong,
     setCurrentSong,
     isPlaying,
     isLoading,
+    songsAPI,
   } = usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
   useEffect(() => {
-    fetchSongs();
+    fetchSongs(1);
     // console.log("session: ",session)
   }, [fetchSongs]);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen text-primary-text">
-  //       Loading songs...
-  //     </div>
-  //   );
-  // }
+  const handlePage = (newPage:number) =>{
+    setPages(newPage);
+    fetchSongs(newPage)
+  }
+
   return (
     <div className="min-h-[90vh] my-16 bg-background-theme ml-24 mr-2 md:ml-80 rounded-lg overflow-y-auto overflow-x-hidden">
       <div className="min-h-[50vh] bg-gradient-to-b from-emerald-500 to-background-theme px-8 py-4">
@@ -96,11 +97,14 @@ function AllSongs({ session }: { session: Session | null }) {
       <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
         Music for you
       </h2>
-      <div className="flex overflow-x-auto gap-2 px-4 py-2 scroll">
+      <div className="flex items-center overflow-x-auto gap-2 px-4 py-2 scroll">
         {isLoading ? (
           <>
             {arraySkeleton.map((_, index) => (
-              <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
+              <div
+                key={index}
+                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
+              >
                 <div className="relative w-full aspect-square">
                   <Skeleton className="w-40 h-40" />
                 </div>
@@ -109,16 +113,16 @@ function AllSongs({ session }: { session: Session | null }) {
           </>
         ) : (
           <>
-            {songs.map((song) => (
+            {songsAPI.map((song) => (
               <div
                 key={song._id}
                 onClick={() => setCurrentSong(song)}
-                className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
+                className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
                 <div className="relative w-full aspect-square">
                   <Image
                     alt="music"
-                    src={song.imageUrl}
+                    src={song.image_music}
                     className="w-40 h-40 rounded-lg"
                     width={500}
                     height={500}
@@ -128,12 +132,15 @@ function AllSongs({ session }: { session: Session | null }) {
                   </button>
                 </div>
                 <span className="block w-full text-secondary-text font-semibold truncate pr-1">
-                  {song.title}
+                  {song.name_music}
                 </span>
               </div>
             ))}
           </>
         )}
+        <button className="cursor-pointer" onClick={() => handlePage(pages+1)}>
+          <ArrowRight className="size-10 rounded-full bg-primary-text text-black hover:bg-secondary-text duration-300" />
+        </button>
       </div>
 
       {/*Random Music */}

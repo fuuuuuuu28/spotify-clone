@@ -1,4 +1,4 @@
-import { Playlist, Song } from "@/types/type";
+import { Playlist, Song, SongAPI } from "@/types/type";
 import axios from "axios";
 import { create } from "zustand";
 
@@ -9,34 +9,50 @@ interface PlayerStore {
   currentIndex: number;
   currentSong: Song | null;
   isPlaying: boolean;
-  randomSongs: Song[];
+  randomSongsAPI: SongAPI[];
   playlist: Playlist | null;
+  songsAPI: SongAPI[];
+  currentSongAPI: SongAPI | null;
+  pages: number;
 
-  fetchSongs: () => Promise<void>;
-  setCurrentSong: (song: Song) => void;
+  setPages:(page:number) => void;
+  fetchSongs: (page:number) => Promise<void>;
+  setCurrentSong: (song: SongAPI) => void;
   setIsPlaying: (value: boolean) => void;
   fetchRandomSong: () => Promise<void>;
-  setPlaylist: (song: string) => Promise<void>;
+  setPlaylist: (song: SongAPI) => Promise<void>;
   fetchPlaylist: () => Promise<void>;
   deleteSong: (songId: string) => Promise<void>;
 }
 
-export const usePlayerStore = create<PlayerStore>((set) => ({
+export const usePlayerStore = create<PlayerStore>((set,get) => ({
   isLoading: false,
   error: null,
   songs: [],
   currentIndex: -1,
   currentSong: null,
   isPlaying: false,
-  randomSongs: [],
+  randomSongsAPI: [],
   playlist: null,
+  songsAPI: [],
+  currentSongAPI: null,
+  pages:1,
 
-  fetchSongs: async () => {
+  setPages: (page) =>{
+    set({pages: page })
+  },
+
+  fetchSongs: async (page) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.get("/api/songs");
-      // console.log(res.data.songs);
-      set({ songs: res.data.songs });
+      const res = await axios.get(
+        "https://v2-api-kaito-music.vercel.app/api/music/top-views",
+        {
+          params: { _limit: 20, _page: page, _type: "million" },
+        }
+      );
+
+      set({ songsAPI: res.data.data, pages:page });
     } catch (error: any) {
       console.log("fetchSongs store error: ", error);
       set({ error: error.response.data.message });
@@ -45,21 +61,29 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
     }
   },
 
-  setCurrentSong: async (song) => {
-    set({ currentSong: song, isPlaying: true });
+  setCurrentSong: (song) => {
+    // console.log("current: ",song)
+    set({ currentSongAPI: song, isPlaying: true });
   },
 
-  setIsPlaying: async (value) => {
+  setIsPlaying: (value) => {
     set({ isPlaying: value });
   },
 
   fetchRandomSong: async () => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.get("/api/songs/random");
-      set({ randomSongs: res.data.songs });
+      let randomPage = Math.floor(Math.random() * 15) +1;
+      const res = await axios.get(
+        "https://v2-api-kaito-music.vercel.app/api/music/top-views",
+        {
+          params: { _limit: 20, _page: randomPage, _type: "million" },
+        }
+      );
+      // console.log(res.data.data);
+      set({ randomSongsAPI: res.data.data });
     } catch (error: any) {
-      console.log("randomSongs store error", error);
+      console.log("randomSongsAPI store error", error);
       set({ error: error.response.data.message });
     } finally {
       set({ isLoading: false });
@@ -69,8 +93,8 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   setPlaylist: async (song) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.post("/api/playlists", { songId: song });
-
+      const res = await axios.post("/api/playlists", { song });
+      console.log(res.data)
       set({ playlist: res.data.playlist });
     } catch (error: any) {
       console.log("setPlaylist store error: ", error);
@@ -97,7 +121,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   deleteSong: async (songId) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await axios.delete("/api/playlists", { data: {songId} });
+      const res = await axios.delete("/api/playlists", { data: { songId } });
       set({ playlist: res.data.playlist });
     } catch (error: any) {
       console.log("deleteSong store error: ", error);
