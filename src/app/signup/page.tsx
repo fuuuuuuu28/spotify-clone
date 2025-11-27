@@ -3,16 +3,27 @@
 import { signUp } from "@/lib/actions/auth-actions";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 function SignUp() {
+    const router = useRouter();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
 
     const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) =>{
       e.preventDefault();
-      await signUp(email, password, name)
+      const res = await signUp(email, password, name)
+      if(res.error){
+        console.log("asd",res)
+        setMessage(res.error)
+        return;
+      }
+      setMessage("Đăng kí thành công")
+      router.push("/login")
     }
 
   return (
@@ -21,9 +32,16 @@ function SignUp() {
       <h1 className="text-center text-primary-text font-bold text-5xl py-4">
         Sign up to start listening
       </h1>
-
+      <div className="">
+        {message && (
+          <h1 className="bg-primary-button font-semibold p-2 mb-4">
+            {message}
+          </h1>
+        )}
+      </div>
       {/* Manual login */}
       <form onSubmit={handleSubmit} className="w-[350px] space-y-3">
+
         <div className="flex flex-col w-full space-y-2">
           <span className="text-primary-text font-bold text-sm">
             Email address

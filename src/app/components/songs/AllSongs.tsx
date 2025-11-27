@@ -16,7 +16,7 @@ function AllSongs({ session }: { session: Session | null }) {
     pages,
     setPages,
     fetchSongs,
-    currentSong,
+    currentSongAPI,
     setCurrentSong,
     isPlaying,
     isLoading,
@@ -38,7 +38,7 @@ function AllSongs({ session }: { session: Session | null }) {
     <div className="min-h-[90vh] my-16 bg-background-theme ml-24 mr-2 md:ml-80 rounded-lg overflow-y-auto overflow-x-hidden">
       <div className="min-h-[50vh] bg-gradient-to-b from-emerald-500 to-background-theme px-8 py-4">
         <div className="flex flex-col transition-all duration-200 ease-in-out">
-          {!currentSong && (
+          {!currentSongAPI && (
             <h1 className="flex gap-2 text-3xl md:text-4xl font-bold text-primary-text">
               Welcome{" "}
               <span className="text-username-text">
@@ -48,7 +48,7 @@ function AllSongs({ session }: { session: Session | null }) {
           )}
           <div
             className={`transition-all duration-200 ease-in-out ${
-              currentSong ? "mt-0" : "mt-4"
+              currentSongAPI ? "mt-0" : "mt-4"
             }`}
           >
             <span className="text-lg md:text-2xl font-semibold text-primary-text">
@@ -59,12 +59,12 @@ function AllSongs({ session }: { session: Session | null }) {
             </p>
           </div>
         </div>
-        {currentSong && (
+        {currentSongAPI && (
           <>
             <div className="flex flex-col md:flex-row items-center px-8 py-4">
               <Image
                 alt="music"
-                src={currentSong.imageUrl}
+                src={currentSongAPI.image_music}
                 className={`size-50 rounded-full border-4 border-black spin-slow ${
                   isPlaying ? "" : "paused"
                 }`}
@@ -73,9 +73,9 @@ function AllSongs({ session }: { session: Session | null }) {
               />
               <div className="px-4 py-4 space-y-2">
                 <h1 className="text-primary-text font-semibold text-3xl ">
-                  {currentSong.title}{" "}
+                  {currentSongAPI.name_music}{" "}
                 </h1>
-                <p className="text-secondary-text ">{currentSong.artist} </p>
+                <p className="text-secondary-text ">{currentSongAPI.name_singer} </p>
               </div>
             </div>
           </>
@@ -98,7 +98,7 @@ function AllSongs({ session }: { session: Session | null }) {
         Music for you
       </h2>
       <div className="flex items-center overflow-x-auto gap-2 px-4 py-2 scroll">
-        {isLoading ? (
+        {isLoading.songs ? (
           <>
             {arraySkeleton.map((_, index) => (
               <div

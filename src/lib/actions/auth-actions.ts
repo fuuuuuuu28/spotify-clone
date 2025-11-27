@@ -2,28 +2,37 @@
 
 import { headers } from "next/headers";
 import { auth } from "../auth";
+import { success } from "better-auth";
 
 export const signUp = async (email: string, password: string, name: string) => {
-  const result = await auth.api.signUpEmail({
-    body: {
-      email,
-      password,
-      name,
-      callbackURL: "/",
-    },
-  });
-  return result;
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+      },
+    });
+    return {data: result};
+  } catch (error: any) {
+    console.log("lib/auth-action/signUp error", error.body.message);
+    return {error: error.body.message}
+  }
 };
 
 export const signIn = async (email: string, password: string) => {
-  const result = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-      callbackURL: "/",
-    },
-  });
-  return result;
+  try {
+    const result = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+    });
+    return {data: result};
+  } catch (error: any) {
+    console.log("lib/auth-action/signIp error", error.body.message);
+    return {error: error.body.message}
+  }
 };
 
 export const signOut = async () => {

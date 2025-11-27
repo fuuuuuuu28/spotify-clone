@@ -5,28 +5,44 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { createAuthClient } from "better-auth/client";
+import { useRouter } from "next/navigation";
 
 function Login() {
   const authClient = createAuthClient();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await signIn(email, password);
+    const res = await signIn(email, password);
+    if (res.error) {
+      setMessage(res.error);
+      return;
+    }
+    setMessage("Đăng nhập thành công");
+    router.push("/")
   };
 
   const handleGoogleSignIn = async () => {
     await authClient.signIn.social({
-    provider: "google",
-    callbackURL:"/"
-  });
+      provider: "google",
+      callbackURL: "/",
+    });
   };
   return (
     <div className="w-full h-screen bg-background-theme mx-auto flex flex-col items-center justify-center space-y-3">
       <Image alt="logo" src="/images/logo.png" width={40} height={40} />
       <h1 className="text-primary-text font-bold text-5xl">Welcome back</h1>
+      <div className="">
+        {message && (
+          <h1 className="bg-primary-button font-semibold p-2 mb-4">
+            {message}
+          </h1>
+        )}
+      </div>
 
       {/* Manual login */}
       <form onSubmit={handleSubmit} className="w-[350px] space-y-5">

@@ -20,7 +20,6 @@ function MusicPlayer() {
     currentSong,
     isPlaying,
     setIsPlaying,
-    songs,
     setCurrentSong,
     songsAPI,
     currentSongAPI,
@@ -70,13 +69,16 @@ function MusicPlayer() {
   };
 
   const handleNext = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
     const nextIndex = (currentIndex + 1) % songsAPI.length;
+    // console.log("songs: ",songsAPI[0])
+    // console.log("index", songsAPI.findIndex((s) => s._id === currentIndex?._id))
+    console.log('12', currentSong)
     setCurrentSong(songsAPI[nextIndex]);
   };
 
   const handlePrev = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
     const prevIndex = (currentIndex - 1 + songsAPI.length) % songsAPI.length;
     setCurrentSong(songsAPI[prevIndex]);
   };
@@ -90,7 +92,7 @@ function MusicPlayer() {
   };
 
   const handleRandom = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSong?._id);
+    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
     let randomIndex;
     do {
       randomIndex = Math.floor(Math.random() * songsAPI.length);
@@ -129,7 +131,7 @@ function MusicPlayer() {
     <div className="fixed bottom-0 w-full h-22 bg-black z-50">
       <div className="w-[95%] mx-auto flex items-center justify-between py-3">
         {/* Song image */}
-        <div className="hidden md:flex md:items-center gap-2 ">
+        <div className="w-[300px] hidden md:flex md:items-center gap-2 ">
           <Image
             alt="cover-11"
             src={currentSongAPI?.image_music || ""}
@@ -204,13 +206,13 @@ function MusicPlayer() {
         </div>
         {/* Right: Volume & Queue */}
         <div className="flex items-center gap-3">
-          <button className="text-zinc-300 hover:text-white transition">
+          <button className="text-zinc-300 transition">
             <MdQueueMusic className="size-6" />
           </button>
           <div className="flex items-center gap-2">
             <button
               onClick={mutedVolume}
-              className="text-zinc-300 hover:text-white"
+              className="text-zinc-300 hover:text-white hover:cursor-pointer"
             >
               {volume === 0 ? (
                 <FaVolumeMute className="size-5" />
@@ -222,7 +224,7 @@ function MusicPlayer() {
               type="range"
               value={volume}
               onChange={handleVolume}
-              className="w-[80px] hidden md:block h-1 accent-emerald-500 bg-zinc-700 rounded-lg"
+              className="w-[80px] hidden md:block h-1 accent-emerald-500 bg-zinc-700 rounded-lg hover:cursor-pointer"
             />
           </div>
         </div>

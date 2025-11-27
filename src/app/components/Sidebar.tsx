@@ -3,7 +3,7 @@
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { GoSearch, GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
+import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { VscLibrary } from "react-icons/vsc";
 import { TfiMenuAlt } from "react-icons/tfi";
 import AddPlaylist from "./songs/AddPlaylist";
@@ -58,19 +58,19 @@ function Sidebar({ session }: { session: Session | null }) {
 
         <h2 className="text-primary-text px-4 py-2">Playlists</h2>
         <div className="hidden md:flex items-center justify-between px-4 py-2">
-          <GoSearch className="size-10 text-secondary-text hover:bg-hover hover:text-primary-text duration-300 rounded-full p-2" />
-          <div className="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105 group">
-            <h2 className="text-secondary-text group-hover:text-primary-text">
+          <div className=""></div>
+          <div className="flex items-center gap-2 ">
+            <h2 className="text-secondary-text">
               Recents
             </h2>
-            <TfiMenuAlt className="size-8 text-secondary-text group-hover:text-primary-text" />
+            <TfiMenuAlt className="size-8 text-secondary-text" />
           </div>
         </div>
 
         {/* Playlists */}
         {session ? (
           <>
-            {isLoading ? (
+            {isLoading.playlist ? (
               <>
                 {arraySkeleton.map((_, index) => (
                   <div

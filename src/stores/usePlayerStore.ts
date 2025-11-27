@@ -3,7 +3,12 @@ import axios from "axios";
 import { create } from "zustand";
 
 interface PlayerStore {
-  isLoading: boolean;
+  isLoading: {
+    songs: boolean,
+    search: boolean,
+    random: boolean,
+    playlist: boolean,
+  };
   error: string | null;
   songs: Song[];
   currentIndex: number;
@@ -14,9 +19,12 @@ interface PlayerStore {
   songsAPI: SongAPI[];
   currentSongAPI: SongAPI | null;
   pages: number;
+  searchResults: SongAPI[];
+  searchQuery: string;
 
-  setPages:(page:number) => void;
-  fetchSongs: (page:number) => Promise<void>;
+  setPages: (page: number) => void;
+  fetchSongs: (page: number) => Promise<void>;
+  fetchSearch: (query: string, page: number) => Promise<void>;
   setCurrentSong: (song: SongAPI) => void;
   setIsPlaying: (value: boolean) => void;
   fetchRandomSong: () => Promise<void>;
@@ -25,8 +33,13 @@ interface PlayerStore {
   deleteSong: (songId: string) => Promise<void>;
 }
 
-export const usePlayerStore = create<PlayerStore>((set,get) => ({
-  isLoading: false,
+export const usePlayerStore = create<PlayerStore>((set, get) => ({
+  isLoading: {
+    songs: false,
+    search: false,
+    random: false,
+    playlist: false,
+  },
   error: null,
   songs: [],
   currentIndex: -1,
@@ -36,14 +49,19 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
   playlist: null,
   songsAPI: [],
   currentSongAPI: null,
-  pages:1,
+  pages: 1,
+  searchResults: [],
+  searchQuery: "",
 
-  setPages: (page) =>{
-    set({pages: page })
+  setPages: (page) => {
+    set({ pages: page });
   },
 
   fetchSongs: async (page) => {
-    set({ isLoading: true, error: null });
+    set((state) => ({
+      isLoading: { ...state.isLoading, songs: true },
+      error: null,
+    }));
     try {
       const res = await axios.get(
         "https://v2-api-kaito-music.vercel.app/api/music/top-views",
@@ -52,12 +70,41 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
         }
       );
 
-      set({ songsAPI: res.data.data, pages:page });
+      set({ songsAPI: res.data.data, pages: page });
     } catch (error: any) {
       console.log("fetchSongs store error: ", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({ isLoading: { ...state.isLoading, songs: false } }));
+    }
+  },
+
+  fetchSearch: async (query, page = 1) => {
+    set((state) => ({
+      isLoading: { ...state.isLoading, search: true },
+      searchQuery: query,
+    }));
+    try {
+      const res = await axios.get(
+        "https://v2-api-kaito-music.vercel.app/api/search",
+        {
+          params: {
+            query,
+            _limit: 20,
+            _page: page,
+          },
+        }
+      );
+
+      set({
+        searchResults: res.data.data,
+        pages: page,
+      });
+    } catch (error: any) {
+      console.log("Search error:", error);
+      set({ error: error?.response?.data?.message || "Search failed" });
+    } finally {
+      set((state) => ({ isLoading: { ...state.isLoading, search: false } }));
     }
   },
 
@@ -71,9 +118,12 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
   },
 
   fetchRandomSong: async () => {
-    set({ isLoading: true, error: null });
+    set((state) => ({
+      isLoading: { ...state.isLoading, random: true },
+      error: null,
+    }));
     try {
-      let randomPage = Math.floor(Math.random() * 15) +1;
+      let randomPage = Math.floor(Math.random() * 15) + 1;
       const res = await axios.get(
         "https://v2-api-kaito-music.vercel.app/api/music/top-views",
         {
@@ -86,26 +136,36 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
       console.log("randomSongsAPI store error", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({
+        isLoading: { ...state.isLoading, random: false },
+      }));
     }
   },
 
   setPlaylist: async (song) => {
-    set({ isLoading: true, error: null });
+    set((state) => ({
+      isLoading: { ...state.isLoading, playlist: true },
+      error: null,
+    }));
     try {
       const res = await axios.post("/api/playlists", { song });
-      console.log(res.data)
+      console.log(res.data);
       set({ playlist: res.data.playlist });
     } catch (error: any) {
       console.log("setPlaylist store error: ", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({
+        isLoading: { ...state.isLoading, playlist: false },
+      }));
     }
   },
 
   fetchPlaylist: async () => {
-    set({ isLoading: true, error: null });
+    set((state) => ({
+      isLoading: { ...state.isLoading, playlist: true },
+      error: null,
+    }));
     try {
       const res = await axios.get("/api/playlists");
 
@@ -114,12 +174,17 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
       console.log("fetchPlaylist store error: ", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({
+        isLoading: { ...state.isLoading, playlist: false },
+      }));
     }
   },
 
   deleteSong: async (songId) => {
-    set({ isLoading: true, error: null });
+    set((state) => ({
+      isLoading: { ...state.isLoading, songs: true },
+      error: null,
+    }));
     try {
       const res = await axios.delete("/api/playlists", { data: { songId } });
       set({ playlist: res.data.playlist });
@@ -127,7 +192,9 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
       console.log("deleteSong store error: ", error);
       set({ error: error.response.data.message });
     } finally {
-      set({ isLoading: false });
+      set((state) => ({
+        isLoading: { ...state.isLoading, songs: false },
+      }));
     }
   },
 }));

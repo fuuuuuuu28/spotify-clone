@@ -20,7 +20,7 @@ function RandomSongs() {
         Random songs
       </h2>
       <div className="flex overflow-x-auto gap-2 px-4 py-2 scroll">
-        {isLoading ? (
+        {isLoading.random ? (
           <>
             {arraySkeleton.map((_, index) => (
               <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">

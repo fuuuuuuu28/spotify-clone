@@ -40,7 +40,7 @@ function AddPlaylist() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <LuPlus className="text-secondary-text size-12 hover:bg-hover duration-300 rounded-full p-2" />
+        <LuPlus className="text-secondary-text size-12 hover:bg-hover duration-300 rounded-full p-2 hover:cursor-pointer" />
       </DialogTrigger>
       <DialogContent className="w-[650px] max-h-[650px] bg-background-theme">
         <DialogHeader>
@@ -50,51 +50,59 @@ function AddPlaylist() {
           </DialogDescription>
           <Separator className="text-primary-text" />
         </DialogHeader>
-        {playlist?.songs.map((song) => (
-          <div key={song._id} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Image
-                alt="songs"
-                src={song.image_music}
-                className=""
-                width={60}
-                height={60}
-              />
-              <div className="">
-                <h2 className="text-primary-text font-semibold">
-                  {song.name_singer}{" "}
-                </h2>
-                <span className="text-secondary-text">{song.name_music} </span>
+        <div className="overflow-y-auto scroll h-[150px] space-y-3">
+          {playlist?.songs.map((song) => (
+            <div key={song._id} className="flex items-center justify-between ">
+              <div className="flex items-center gap-2">
+                <Image
+                  alt="songs"
+                  src={song.image_music}
+                  className="rounded-xl"
+                  width={60}
+                  height={60}
+                />
+                <div className="">
+                  <h2 className="text-primary-text font-semibold">
+                    {song.name_singer}{" "}
+                  </h2>
+                  <span className="text-secondary-text">
+                    {song.name_music}{" "}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
         <Separator className="text-primary-text" />
-        {songsPlaylist.map((song) => (
-          <div key={song._id} className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Image
-                alt="songs"
-                src={song.image_music}
-                className=""
-                width={60}
-                height={60}
-              />
-              <div className="">
-                <h2 className="text-primary-text font-semibold">
-                  {song.name_singer}{" "}
-                </h2>
-                <span className="text-secondary-text">{song.name_music} </span>
+        <div className="space-y-2">
+          {songsPlaylist.map((song) => (
+            <div key={song._id} className="flex items-center justify-between">
+              <div className="w-full flex items-center gap-2">
+                <Image
+                  alt="songs"
+                  src={song.image_music}
+                  className=""
+                  width={60}
+                  height={60}
+                />
+                <div className="">
+                  <h2 className="text-primary-text font-semibold">
+                    {song.name_singer}{" "}
+                  </h2>
+                  <span className="text-secondary-text">
+                    {song.name_music}{" "}
+                  </span>
+                </div>
               </div>
+              <button
+                onClick={() => setPlaylist(song)}
+                className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
+              >
+                Add to playlist
+              </button>
             </div>
-            <button
-              onClick={() => setPlaylist(song)}
-              className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
-            >
-              Add to playlist
-            </button>
-          </div>
-        ))}
+          ))}
+        </div>
         <div className="flex items-center justify-between mt-4">
           <button
             onClick={handlePrev}
