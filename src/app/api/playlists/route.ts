@@ -12,25 +12,34 @@ export async function POST(req: Request) {
     }
     const userId = session.user.id;
     const { song } = await req.json();
+    const externalId = song._id;
 
-    let existingSong = await Song.findOne({ _id: song._id})
+    let existingSong = await Song.findOne({ externalId });
     // console.log("first")
-    if(!existingSong){
+    if (!existingSong) {
       existingSong = await Song.create({
-        name_music:song.name_music,
+        externalId,
+        name_music: song.name_music,
         name_singer: song.name_singer,
         image_music: song.image_music,
         src_music: song.src_music,
-        user_id: userId,
-        
-      })
+      });
     }
-    // console.log("asd", existingSong)
+
+    const playlist = await Playlist.findOne({ user_id: userId });
+    //equals dùng để so sánh giá trị bên trong Object
+    if (playlist && playlist.songs.some((id:any) => id.equals(existingSong._id))) {
+      return NextResponse.json(
+        { message: "Already have this song" },
+        { status: 200 }
+      );
+    }
     const playlistPOST = await Playlist.findOneAndUpdate(
       { user_id: userId },
       { $addToSet: { songs: existingSong._id } },
       { new: true, upsert: true }
     ).populate("songs");
+    // console.log("ads", playlistPOST?.songs);
 
     return NextResponse.json(
       { playlist: playlistPOST, message: "Playlist POST server: " },
@@ -54,10 +63,11 @@ export async function GET(req: Request) {
     }
 
     const userId = session.user.id;
-    const playlistGET = await Playlist.findOne({ user_id: userId }).populate(
+    let playlistGET = await Playlist.findOne({ user_id: userId }).populate(
       "songs"
     );
-    // console.log("playlist server: ", playlist)
+
+    // console.log("playlist server: ", playlistGET)
     return NextResponse.json(
       { playlist: playlistGET, message: "Playlist GET server: " },
       { status: 200 }

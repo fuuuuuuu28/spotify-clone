@@ -12,11 +12,11 @@ export async function ClientLayout({
   return (
     <div className="min-h-screen">
       <Navbar session={session} />
-      <main>
+      <main className="">
         <Sidebar session={session} />
-        <MusicPlayer />
         {children}
       </main>
+        <MusicPlayer />
     </div>
   );
 }

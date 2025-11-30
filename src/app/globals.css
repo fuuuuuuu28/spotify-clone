@@ -32,13 +32,41 @@
   animation-play-state:paused;
 }
 
-.range-player::-webkit-slider-thumb {
-  @apply appearance-none h-2 w-3 rounded-full accent-emerald-500 bg-white transition-all duration-200;
+/* ✅ Range slider tùy chỉnh */
+.range-player {
+  @apply w-full h-2 rounded-lg appearance-none cursor-pointer;
 }
 
-.range-player:hover::-webkit-slider-thumb {
-  @apply h-4 w-4 bg-green-500;
+/* Track (nền) */
+.range-player::-webkit-slider-runnable-track {
+  @apply h-2 rounded-lg;
 }
+
+.range-player::-moz-range-track {
+  @apply h-2 rounded-lg;
+}
+
+/* Thumb (nút kéo) */
+.range-player::-webkit-slider-thumb {
+  @apply appearance-none bg-white rounded-full h-4 w-4 shadow-lg transition-all duration-150;
+  margin-top: -4px; 
+  cursor: pointer;
+}
+
+.range-player::-moz-range-thumb {
+  @apply bg-white rounded-full h-4 w-4 shadow-lg border-none;
+  cursor: pointer;
+}
+
+/* Hover effects */
+.range-player:hover::-webkit-slider-thumb {
+  @apply scale-110;
+}
+
+.range-player:hover::-moz-range-thumb {
+  @apply scale-110;
+}
+
 
 .scroll::-webkit-scrollbar {
   width: 8px;            /* Độ rộng dọc */

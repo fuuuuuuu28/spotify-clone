@@ -4,10 +4,20 @@ import { create } from "zustand";
 
 interface PlayerStore {
   isLoading: {
-    songs: boolean,
-    search: boolean,
-    random: boolean,
-    playlist: boolean,
+    songs: boolean;
+    search: boolean;
+    random: boolean;
+    playlistAdd: boolean;
+    playlistDelete: {
+      deleting: boolean;
+      deletingSongId: string | null;
+    };
+    playlistFetch: {
+      fetching: boolean;
+      duplicated: boolean;
+      duplicatedSongId: string | null;
+      addingSongId: string | null;
+    };
   };
   error: string | null;
   songs: Song[];
@@ -38,7 +48,17 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     songs: false,
     search: false,
     random: false,
-    playlist: false,
+    playlistAdd: false,
+    playlistDelete: {
+      deleting: false,
+      deletingSongId: null,
+    },
+    playlistFetch: {
+      fetching: false,
+      duplicated: false,
+      duplicatedSongId: null,
+      addingSongId: null,
+    },
   },
   error: null,
   songs: [],
@@ -70,7 +90,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         }
       );
 
-      set({ songsAPI: res.data.data, pages: page });
+      set((state) => ({
+        songsAPI:
+          page === 1 ? res.data.data : [...state.songsAPI, ...res.data.data],
+        pages: page,
+      }));
     } catch (error: any) {
       console.log("fetchSongs store error: ", error);
       set({ error: error.response.data.message });
@@ -144,26 +168,58 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   setPlaylist: async (song) => {
     set((state) => ({
-      isLoading: { ...state.isLoading, playlist: true },
+      isLoading: {
+        ...state.isLoading,
+        playlistFetch: {
+          ...state.isLoading.playlistFetch,
+          addingSongId: song._id,
+          duplicated: false,
+          duplicatedSongId: null,
+        },
+      },
       error: null,
     }));
     try {
       const res = await axios.post("/api/playlists", { song });
-      console.log(res.data);
+      console.log(res);
+      if (res.data.message === "Already have this song") {
+        set((state) => ({
+          isLoading: {
+            ...state.isLoading,
+            playlistFetch: {
+              ...state.isLoading.playlistFetch,
+              duplicated: true,
+              duplicatedSongId: song._id,
+            },
+          },
+        }));
+        return;
+      }
+
       set({ playlist: res.data.playlist });
     } catch (error: any) {
       console.log("setPlaylist store error: ", error);
       set({ error: error.response.data.message });
     } finally {
       set((state) => ({
-        isLoading: { ...state.isLoading, playlist: false },
+        isLoading: {
+          ...state.isLoading,
+          playlistAdd: false,
+          playlistFetch: {
+            ...state.isLoading.playlistFetch,
+            addingSongId: null,
+          },
+        },
       }));
     }
   },
 
   fetchPlaylist: async () => {
     set((state) => ({
-      isLoading: { ...state.isLoading, playlist: true },
+      isLoading: {
+        ...state.isLoading,
+        playlistFetch: { ...state.isLoading.playlistFetch, fetching: true },
+      },
       error: null,
     }));
     try {
@@ -175,14 +231,23 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       set({ error: error.response.data.message });
     } finally {
       set((state) => ({
-        isLoading: { ...state.isLoading, playlist: false },
+        isLoading: {
+          ...state.isLoading,
+          playlistFetch: { ...state.isLoading.playlistFetch, fetching: false },
+        },
       }));
     }
   },
 
   deleteSong: async (songId) => {
     set((state) => ({
-      isLoading: { ...state.isLoading, songs: true },
+      isLoading: {
+        ...state.isLoading,
+        playlistDelete: {
+          deleting: true,
+          deletingSongId: songId,
+        },
+      },
       error: null,
     }));
     try {
@@ -193,7 +258,13 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       set({ error: error.response.data.message });
     } finally {
       set((state) => ({
-        isLoading: { ...state.isLoading, songs: false },
+        isLoading: {
+          ...state.isLoading,
+          playlistDelete: {
+            deleting: true,
+            deletingSongId: songId,
+          },
+        },
       }));
     }
   },

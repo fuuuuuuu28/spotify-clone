@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { FaTrash } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LuLoaderCircle } from "react-icons/lu";
 
 type Session = typeof auth.$Infer.Session;
 function Sidebar({ session }: { session: Session | null }) {
@@ -35,7 +36,7 @@ function Sidebar({ session }: { session: Session | null }) {
   return (
     <>
       <aside
-        className={`fixed left-2 top-16 w-75 h-[90vh] bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
+        className={`fixed left-2 top-16 w-75 h-[calc(100vh-150px)] mb-100 overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
           isOpen ? "translate-x-0" : "-translate-x-[75%]"
         } md:translate-x-0`}
       >
@@ -60,17 +61,15 @@ function Sidebar({ session }: { session: Session | null }) {
         <div className="hidden md:flex items-center justify-between px-4 py-2">
           <div className=""></div>
           <div className="flex items-center gap-2 ">
-            <h2 className="text-secondary-text">
-              Recents
-            </h2>
+            <h2 className="text-secondary-text">Recents</h2>
             <TfiMenuAlt className="size-8 text-secondary-text" />
           </div>
         </div>
 
         {/* Playlists */}
         {session ? (
-          <>
-            {isLoading.playlist ? (
+          <div className="h-[calc(100vh-320px)] overflow-y-auto scroll">
+            {isLoading.playlistFetch.fetching ? (
               <>
                 {arraySkeleton.map((_, index) => (
                   <div
@@ -93,7 +92,7 @@ function Sidebar({ session }: { session: Session | null }) {
                 ))}
               </>
             ) : (
-              <>
+              <div className="">
                 {playlist?.songs.map((song) => (
                   <div
                     key={song._id}
@@ -129,13 +128,18 @@ function Sidebar({ session }: { session: Session | null }) {
                       onClick={() => deleteSong(song._id)}
                       className="hover:bg-hover rounded-full p-4 duration-300 cursor-pointer"
                     >
-                      <FaTrash className="text-primary-text " />
+                      {isLoading.playlistDelete.deleting &&
+                      isLoading.playlistDelete.deletingSongId === song._id ? (
+                        <LuLoaderCircle className="animate-spin text-primary-text" />
+                      ) : (
+                        <FaTrash className="text-primary-text " />
+                      )}
                     </div>
                   </div>
                 ))}
-              </>
+              </div>
             )}
-          </>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center space-y-3">
             <p className="text-primary-text text-lg font-bold">

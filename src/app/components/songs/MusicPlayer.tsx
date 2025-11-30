@@ -53,11 +53,12 @@ function MusicPlayer() {
   };
 
   const handleUpdateTime = () => {
-    if (audioRef.current) {
-      setProcess(
-        (audioRef.current.currentTime / audioRef.current.duration) * 100
-      );
+    if (!audioRef.current || !audioRef.current.duration || isNaN(audioRef.current.duration)) {
+      return;
     }
+    setProcess(
+      (audioRef.current.currentTime / audioRef.current.duration) * 100
+    );
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,16 +70,20 @@ function MusicPlayer() {
   };
 
   const handleNext = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
+    const currentIndex = songsAPI.findIndex(
+      (s) => s._id === currentSongAPI?._id
+    );
     const nextIndex = (currentIndex + 1) % songsAPI.length;
     // console.log("songs: ",songsAPI[0])
     // console.log("index", songsAPI.findIndex((s) => s._id === currentIndex?._id))
-    console.log('12', currentSong)
+    console.log("12", currentSong);
     setCurrentSong(songsAPI[nextIndex]);
   };
 
   const handlePrev = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
+    const currentIndex = songsAPI.findIndex(
+      (s) => s._id === currentSongAPI?._id
+    );
     const prevIndex = (currentIndex - 1 + songsAPI.length) % songsAPI.length;
     setCurrentSong(songsAPI[prevIndex]);
   };
@@ -92,7 +97,9 @@ function MusicPlayer() {
   };
 
   const handleRandom = () => {
-    const currentIndex = songsAPI.findIndex((s) => s._id === currentSongAPI?._id);
+    const currentIndex = songsAPI.findIndex(
+      (s) => s._id === currentSongAPI?._id
+    );
     let randomIndex;
     do {
       randomIndex = Math.floor(Math.random() * songsAPI.length);
@@ -154,7 +161,7 @@ function MusicPlayer() {
           <div className="flex items-center gap-5">
             <button
               onClick={handleShuffle}
-              className="hover:scale-110 transition"
+              className="hover:scale-110 hover:cursor-pointer transition"
             >
               <CiShuffle
                 className={`${
@@ -162,22 +169,31 @@ function MusicPlayer() {
                 } text-xl`}
               />
             </button>
-            <button onClick={handlePrev} className="hover:scale-110 transition">
+            <button
+              onClick={handlePrev}
+              className="hover:scale-110 hover:cursor-pointer transition"
+            >
               <FaStepBackward className="text-zinc-400 text-xl" />
             </button>
-            <button onClick={handlePlay} className="hover:scale-110 transition">
+            <button
+              onClick={handlePlay}
+              className="hover:scale-110 hover:cursor-pointer transition"
+            >
               {isPlaying ? (
                 <FaPauseCircle className="text-white text-3xl" />
               ) : (
                 <FaPlayCircle className="text-white text-3xl" />
               )}
             </button>
-            <button onClick={handleNext} className="hover:scale-110 transition">
+            <button
+              onClick={handleNext}
+              className="hover:scale-110 hover:cursor-pointer transition"
+            >
               <FaStepForward className="text-zinc-400 text-xl" />
             </button>
             <button
               onClick={handleRepeat}
-              className="hover:scale-110 transition"
+              className="hover:scale-110 hover:cursor-pointer transition"
             >
               <FaRepeat
                 className={`${
@@ -196,8 +212,10 @@ function MusicPlayer() {
               type="range"
               value={process}
               onChange={handleSeek}
-              // className="w-full h-1 rounded-lg accent-white bg-zinc-700"
-              className="range-player w-full outline-none h-2 bg-zinc-700 rounded-md accent-emerald-500 appearance-none"
+              className="range-player w-full outline-none"
+              style={{
+                background: `linear-gradient(to right, #1db954 ${process}%, #444 ${process}%)`,
+              }}
             />
             <span className="text-zinc-400 text-xs w-[40px]">
               {formatTime(Number(audioRef.current?.duration || 0))}

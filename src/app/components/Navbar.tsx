@@ -22,8 +22,14 @@ type Session = typeof auth.$Infer.Session;
 function Navbar({ session }: { session: Session | null }) {
   const [keyword, setKeyWord] = useState("");
   const [focus, setFocus] = useState(false);
-  const { fetchSearch, searchResults, fetchSongs, songsAPI, isLoading, setCurrentSong } =
-    usePlayerStore();
+  const {
+    fetchSearch,
+    searchResults,
+    fetchSongs,
+    songsAPI,
+    isLoading,
+    setCurrentSong,
+  } = usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
 
@@ -84,7 +90,10 @@ function Navbar({ session }: { session: Session | null }) {
         </div>
 
         {/* Render kết quả */}
-        <div onMouseDown={(e) => e.preventDefault()} className="absolute top-16 left-16 w-[500px] bg-black max-h-50 overflow-y-auto scroll rounded-b-xl">
+        <div
+          onMouseDown={(e) => e.preventDefault()}
+          className="absolute top-16 left-16 w-[500px] bg-black max-h-50 overflow-y-auto scroll rounded-b-xl"
+        >
           {/* Input rỗng → hiện bài hát đề xuất */}
           {keyword.trim() === "" &&
             focus &&
@@ -112,18 +121,22 @@ function Navbar({ session }: { session: Session | null }) {
             (isLoading.search ? (
               <div>
                 {arraySkeleton.map((_, index) => (
-                  <div className="flex items-center gap-4 bg-background-theme m-4 p-4 text-white rounded-lg my-2">
+                  <div className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2">
                     <Skeleton className="h-10 w-10" />
                     <Skeleton className="w-60 h-5" />
                   </div>
                 ))}
+              </div>
+            ) : searchResults.length == 0 ? (
+              <div className="text-center text-secondary-text p-4">
+                Không tìm thấy bài hát nào.
               </div>
             ) : (
               searchResults.map((song) => (
                 <div
                   key={song._id}
                   onClick={() => setCurrentSong(song)}
-                  className="flex items-center gap-4 bg-background-theme m-4 p-4 text-white rounded-lg my-2 hover:bg-hover hover:cursor-pointer"
+                  className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2 hover:bg-hover hover:cursor-pointer"
                 >
                   <Image
                     src={song.image_music}
@@ -155,7 +168,8 @@ function Navbar({ session }: { session: Session | null }) {
         <div className="pl-6 space-x-5">
           {session ? (
             <div className="flex items-center gap-3">
-              <DropdownMenu>
+              {/* modal giúp không block mất body scroll */}
+              <DropdownMenu modal={false}> 
                 <DropdownMenuTrigger>
                   <Image
                     src={session.user.image ?? "/images/avatar.png"}

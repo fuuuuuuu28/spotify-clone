@@ -11,20 +11,24 @@ import { LuPlus } from "react-icons/lu";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
+import { Loader } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 function AddPlaylist() {
-  const { songsAPI, playlist, setPlaylist } = usePlayerStore();
+  const { songsAPI, playlist, setPlaylist, fetchPlaylist, isLoading } =
+    usePlayerStore();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [message, setMessage] = useState("");
   const songsPerPage = 5;
 
   const totalPages = Math.ceil(songsAPI.length / songsPerPage);
   const startIndex = (currentPage - 1) * songsPerPage;
   const songsPlaylist = songsAPI.slice(startIndex, startIndex + songsPerPage);
 
-  // useEffect(() => {
-  //   fetchPlaylist();
-  // }, [fetchPlaylist]);
+  useEffect(() => {
+    fetchPlaylist();
+  }, [fetchPlaylist]);
 
   const handleNext = () => {
     if (currentPage < totalPages) {
@@ -37,12 +41,13 @@ function AddPlaylist() {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <LuPlus className="text-secondary-text size-12 hover:bg-hover duration-300 rounded-full p-2 hover:cursor-pointer" />
       </DialogTrigger>
-      <DialogContent className="w-[650px] max-h-[650px] bg-background-theme">
+      <DialogContent className="w-[650px] min-h-[650px] bg-background-theme">
         <DialogHeader>
           <DialogTitle className="text-primary-text">Library</DialogTitle>
           <DialogDescription className="text-secondary-text">
@@ -62,12 +67,10 @@ function AddPlaylist() {
                   height={60}
                 />
                 <div className="">
-                  <h2 className="text-primary-text font-semibold">
-                    {song.name_singer}{" "}
-                  </h2>
-                  <span className="text-secondary-text">
+                  <span className="text-primary-text font-semibold">
                     {song.name_music}{" "}
                   </span>
+                  <h2 className=" text-secondary-text">{song.name_singer} </h2>
                 </div>
               </div>
             </div>
@@ -81,25 +84,35 @@ function AddPlaylist() {
                 <Image
                   alt="songs"
                   src={song.image_music}
-                  className=""
+                  className="size-15"
                   width={60}
                   height={60}
                 />
                 <div className="">
-                  <h2 className="text-primary-text font-semibold">
-                    {song.name_singer}{" "}
-                  </h2>
-                  <span className="text-secondary-text">
+                  <span className="text-primary-text font-semibold">
                     {song.name_music}{" "}
                   </span>
+                  <h2 className=" text-secondary-text">{song.name_singer} </h2>
                 </div>
               </div>
-              <button
-                onClick={() => setPlaylist(song)}
-                className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
-              >
-                Add to playlist
-              </button>
+              <div className="flex flex-col">
+                <button
+                  onClick={() => setPlaylist(song)}
+                  className="min-w-[120px] bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
+                >
+                  {isLoading.playlistFetch.addingSongId === song._id ? (
+                    <Loader className="mx-auto size-5 animate-spin" />
+                  ) : (
+                    "Add to playlist"
+                  )}
+                </button>
+                {isLoading.playlistFetch.duplicated &&
+                  isLoading.playlistFetch.duplicatedSongId === song._id && (
+                    <span className="text-center text-sm text-red-400">
+                      You already have this song
+                    </span>
+                  )}
+              </div>
             </div>
           ))}
         </div>
