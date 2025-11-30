@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { LuLoaderCircle } from "react-icons/lu";
 
 function SignUp() {
     const router = useRouter();
@@ -13,16 +14,20 @@ function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [isLoading, setIsloading] = useState(false);
 
     const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) =>{
       e.preventDefault();
+      setIsloading(true);
       const res = await signUp(email, password, name)
       if(res.error){
-        console.log("asd",res)
+        // console.log("asd",res)
         setMessage(res.error)
+        setIsloading(false);
         return;
       }
       setMessage("Đăng kí thành công")
+      setIsloading(false);
       router.push("/login")
     }
 
@@ -72,7 +77,7 @@ function SignUp() {
           />
         </div>
         <button className="w-full bg-primary-button font-bold p-3 rounded-full hover:scale-105 hover:bg-secondary cursor-pointer transition-all duration-300">
-          Sign up
+          {isLoading ? <LuLoaderCircle className="size-5 mx-auto animate-spin" /> : "Sign up"} 
         </button>
       </form>
 

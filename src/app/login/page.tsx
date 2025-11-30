@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { createAuthClient } from "better-auth/client";
 import { useRouter } from "next/navigation";
+import { LuLoaderCircle } from "react-icons/lu";
 
 function Login() {
   const authClient = createAuthClient();
@@ -14,15 +15,19 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsloading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsloading(true);
     const res = await signIn(email, password);
     if (res.error) {
       setMessage(res.error);
+      setIsloading(false);
       return;
     }
     setMessage("Đăng nhập thành công");
+    setIsloading(false);
     router.push("/")
   };
 
@@ -65,7 +70,7 @@ function Login() {
           />
         </div>
         <button className="w-full bg-primary-button font-bold p-3 rounded-full hover:scale-105 hover:bg-secondary cursor-pointer transition-all duration-300">
-          Continue
+          {isLoading ? <LuLoaderCircle className="size-5 mx-auto animate-spin"/> : "Continue" }
         </button>
       </form>
 
