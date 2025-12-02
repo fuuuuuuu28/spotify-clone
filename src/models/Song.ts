@@ -3,7 +3,7 @@ import { unique } from "next/dist/build/utils";
 
 const songSchema = new mongoose.Schema(
   {
-    externalId: {type:String, required:true, unique:true},
+    externalId: {type:String, unique:true},
     name_music: { type: String, required: true },
     name_singer: { type: String, required: true },
     image_music: { type: String, required: true },

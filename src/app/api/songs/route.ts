@@ -6,13 +6,6 @@ import { Song } from "@/models/Song";
 import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 
-// let isConnected = false;
-// async function ensureConnection() {
-//   if (isConnected) {
-//     await connectionToDatabase();
-//     isConnected = true;
-//   }
-// }
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -34,26 +27,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // const uploadDir = path.join(process.cwd(), "public/uploads");
-    // if (!fs.existsSync(uploadDir)) {
-    //   fs.mkdirSync(uploadDir, { recursive: true });
-    // }
-
-    // image.arrayBuffer(): Chuyển file hình ảnh thành ArrayBuffer
-    // Buffer.from(): Chuyển ArrayBuffer thành Buffer có thể ghi file
-    // Date.now() + "-" + image.name: Tạo tên file duy nhất
-    // path.join(uploadDir, imageName): Tạo đường dẫn file
-    // fs.writeFileSync(): Ghi file đồng bộ đĩa cứng
-    // const imageBytes = Buffer.from(await image.arrayBuffer());
-    // const imageName = Date.now() + "-" + image.name;
-    // const imagePath = path.join(uploadDir, imageName);
-    // fs.writeFileSync(imagePath, imageBytes);
-
-    // const audioBytes = Buffer.from(await audio.arrayBuffer());
-    // const audioName = Date.now() + "-" + audio.name;
-    // const audioPath = path.join(uploadDir, audioName);
-    // fs.writeFileSync(audioPath, audioBytes);
-
     const imageBytes = Buffer.from(await image.arrayBuffer());
     const imageBase64 = `data:${image.type};base64,${imageBytes.toString(
       "base64"
@@ -73,11 +46,11 @@ export async function POST(req: Request) {
       resource_type: "video", // bắt buộc cho audio
     });
     const newSong = await Song.create({
-      title,
-      artist,
-      user_id: userId,
-      imageUrl: uploadedImage.secure_url,
-      audioUrl: uploadedAudio.secure_url,
+      name_music: title,
+      name_singer: artist,
+      image_music: uploadedImage.secure_url,
+      src_music: uploadedAudio.secure_url,
+      externalId: null, // do bài user upload không phải từ API khác
     });
 
     return NextResponse.json({ message: "Upload thành công", song: newSong });

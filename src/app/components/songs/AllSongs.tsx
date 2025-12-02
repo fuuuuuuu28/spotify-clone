@@ -22,8 +22,11 @@ function AllSongs({ session }: { session: Session | null }) {
     isLoading,
     songsAPI,
   } = usePlayerStore();
+  //Dùng để đọc toàn bộ container scroll chứa songs
   const songNextPage = useRef<HTMLDivElement | null>(null);
+  //Dùng để gán cho vị trí cụ thể trong songs
   const firstNewSongRef = useRef<HTMLDivElement | null>(null);
+  
   const [previousSongCount, setPreviousSongCount] = useState(0);
 
   const arraySkeleton = Array.from({ length: 5 });
@@ -80,13 +83,13 @@ function AllSongs({ session }: { session: Session | null }) {
         </div>
         {currentSongAPI && (
           <>
-            <div className="flex flex-col md:flex-row items-center px-8 py-4">
+            <div className="flex flex-col md:flex-row md:justify-center items-center px-8 py-4">
               <Image
                 alt="music"
                 src={currentSongAPI.image_music}
-                className={`size-50 rounded-full border-4 border-black spin-slow ${
+                className={`size-50 md:size-80 rounded-full border-4 border-black transition-transform duration-300 spin-slow ${
                   isPlaying ? "" : "paused"
-                }`}
+                } ${currentSongAPI ? "translate-x-0" : "-translate-x-[80%]"}`}
                 width={500}
                 height={500}
               />

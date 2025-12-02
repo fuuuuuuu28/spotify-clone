@@ -23,6 +23,12 @@
   }
 }
 
+/* @keyframes moveDisc{
+  0%{
+    trans
+  }
+} */
+
 .spin-slow {
   animation: spinSlow 8s linear infinite;
   animation-play-state:running;

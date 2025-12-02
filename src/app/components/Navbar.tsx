@@ -161,13 +161,13 @@ function Navbar({ session }: { session: Session | null }) {
           <span className="text-secondary-text font-bold text-md ">
             Support
           </span>
-          <span className="text-secondary-text font-bold text-md ">
+          <span className="text-secondary-text font-bold text-md">
             Download
           </span>
         </div>
-        <div className="pl-6 space-x-5">
+        <div className="pl-6 space-x-5 ">
           {session ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ">
               {/* modal giúp không block mất body scroll */}
               <DropdownMenu modal={false}> 
                 <DropdownMenuTrigger>
@@ -176,7 +176,7 @@ function Navbar({ session }: { session: Session | null }) {
                     alt={session.user.name ?? "User"}
                     width={30}
                     height={30}
-                    className="rounded-full transition-all hover:scale-115 duration-300"
+                    className="rounded-full transition-all hover:scale-115 duration-300 hover:cursor-pointer"
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
