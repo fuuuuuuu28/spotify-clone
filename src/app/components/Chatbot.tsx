@@ -1,6 +1,6 @@
 "use client";
 
-import { useMusicStore } from "@/stores/useMusicStore";
+import { useAskToChatbot, useChatHistory } from "@/hooks/useChatbot";
 import { Loader, Send } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -15,8 +15,8 @@ function RemarkContent({ content }: { content: string }) {
 }
 
 function Chatbot({ isOpen }: { isOpen: boolean }) {
-  const { loadChatHistory, askToChatbot, messages, isLoading } =
-    useMusicStore();
+  const { mutate:askBot, isPending} = useAskToChatbot();
+  const { data:messages, isLoading} = useChatHistory()
   const [input, setInput] = useState("");
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -26,11 +26,11 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
     msgsEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadChatHistory();
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     loadChatHistory();
+  //   }
+  // }, [isOpen]);
 
   const handleInput = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const target = e.target;
@@ -45,7 +45,7 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
     if (!prompt) return;
 
     setInput("");
-    await askToChatbot(prompt);
+    await askBot(prompt);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -69,7 +69,7 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
       `}
     >
       <div className="h-[90%] overflow-auto scroll flex-1 px-2 py-4">
-        {isLoading.chatbot.fetching ? (
+        {isLoading ? (
           <>
             <div className="flex items-center justify-center h-full max-w-3xl mx-auto p-4 rounded-xl">
               {"Loading...".split("").map((letter, i) => (
@@ -85,7 +85,7 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
           </>
         ) : (
           <>
-            {messages.length === 0 ? (
+            {messages?.length === 0 ? (
               <>
                 <div className="text-secondary-text font-bold text-xl text-center pt-36">
                   Tôi là chatbot AI sẽ hỗ trợ bạn
@@ -93,7 +93,7 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
               </>
             ) : (
               <>
-                {messages.map((msg) => (
+                {messages?.map((msg) => (
                   <div
                     key={msg._id}
                     className={`${
@@ -105,8 +105,8 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
                     <div
                       className={`${
                         msg.role === "user"
-                          ? "bg-secondary-button rounded-b-xl rounded-tl-xl"
-                          : "bg-blue-300 rounded-b-xl rounded-tr-xl"
+                          ? "bg-secondary-button rounded-b-2xl rounded-tl-2xl"
+                          : "bg-blue-300 rounded-b-2xl rounded-tr-2xl"
                       } max-w-[90%] px-4 py-3 text-lg`}
                     >
                       <RemarkContent content={msg.content} />
@@ -132,10 +132,10 @@ function Chatbot({ isOpen }: { isOpen: boolean }) {
 
           <button
             onClick={() => handleSend()}
-            disabled={isLoading.chatbot.sending}
+            disabled={isPending}
             className="p-2 place-items-center rounded-xl bg-primary-button text-white transition hover:bg-secondary-button active:scale-95 disabled:opacity-50 disabled:hover:bg-zinc-600 hover:cursor-pointer "
           >
-            {isLoading.chatbot.sending ? (
+            {isPending ? (
               <Loader className="text-primary-text animate-spin" />
             ) : (
               <Send className="text-primary-text" />

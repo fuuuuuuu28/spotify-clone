@@ -8,22 +8,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { LuPlus } from "react-icons/lu";
-import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "lucide-react";
-import { Playlist, SongAPI } from "@/types/type";
-import { addToPlaylist } from "@/lib/actions/playlists-actions";
+import { SongAPI } from "@/types/type";
 import { useAddToPlaylist, usePlaylist } from "@/hooks/useHandlePlaylist";
 import { toast } from "sonner";
-import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
 import { usePaginatedSongs } from "@/hooks/usePaginatedSongs";
 
-function AddPlaylistDialog({ initialSongs }: { initialSongs: SongAPI[] }) {
+function AddPlaylistDialog() {
   const [page, setPage] = useState(1);
   const { data: playlist } = usePlaylist();
   const { mutate: addSong, isPending, variables } = useAddToPlaylist();
-  const { data:songPages, isFetching, isLoading } = usePaginatedSongs(page);
+  const { data:songPages, isFetching } = usePaginatedSongs(page);
 
   const totalPages = songPages?.totalPages ?? 1;
   // console.log("first: ",songs)
@@ -47,18 +44,6 @@ function AddPlaylistDialog({ initialSongs }: { initialSongs: SongAPI[] }) {
       },
     });
   };
-
-  // const handleNext = () => {
-  //   if (currentPage < totalPages) {
-  //     setCurrentPage((prev) => prev + 1);
-  //   }
-  // };
-
-  // const handlePrev = () => {
-  //   if (currentPage > 1) {
-  //     setCurrentPage((prev) => prev - 1);
-  //   }
-  // };
 
   return (
     <Dialog>
@@ -141,20 +126,20 @@ function AddPlaylistDialog({ initialSongs }: { initialSongs: SongAPI[] }) {
         <div className="flex items-center justify-between mt-4">
           <button
             onClick={() => setPage((p) => p - 1)}
-            disabled={isLoading || page==1}
+            disabled={isFetching || page==1}
             className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
           >
-            {isLoading ? <Loader className="animate-spin" /> : "Previous"}
+            {isFetching ? <Loader className="animate-spin" /> : "Previous"}
           </button>
           <span className="text-secondary-text">
             Page {page}
           </span>
           <button
             onClick={() => setPage((p) =>  p + 1)}
-            disabled={isLoading || page==15}
+            disabled={isFetching || page==15}
             className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
           >
-            {isLoading ? <Loader className="animate-spin"/> :"Next"}
+            {isFetching ? <Loader className="animate-spin"/> :"Next"}
           </button>
         </div>
       </DialogContent>

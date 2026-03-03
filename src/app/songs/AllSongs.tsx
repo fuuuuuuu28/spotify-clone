@@ -1,19 +1,16 @@
 "use client";
 import { auth } from "@/lib/auth";
-import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { FaPlay } from "react-icons/fa";
-import { LuLoaderCircle, LuPlus } from "react-icons/lu";
+import { LuPlus } from "react-icons/lu";
 import RandomSongs from "./RandomSongs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, LucideRefreshCcw } from "lucide-react";
+import { LucideRefreshCcw } from "lucide-react";
 import { SongAPI } from "@/types/type";
-import { fetchSongs } from "@/lib/api/song-api";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
-import { useRandomSong } from "@/hooks/useRandomSong";
 import ArtistSongPopover from "../components/ArtistSongPopover";
 
 type Session = typeof auth.$Infer.Session;

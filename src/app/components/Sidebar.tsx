@@ -1,6 +1,5 @@
 "use client";
 
-import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -12,12 +11,7 @@ import Link from "next/link";
 import { FaTrash } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LuLoaderCircle } from "react-icons/lu";
-import { Playlist, SongAPI } from "@/types/type";
-import {
-  addToPlaylist,
-  removeFromPlaylist,
-} from "@/lib/actions/playlists-actions";
-
+import { SongAPI } from "@/types/type";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { usePlaylist, useRemoveFromPlaylist } from "@/hooks/useHandlePlaylist";
 import { toast } from "sonner";
@@ -26,10 +20,8 @@ import { Button } from "../../components/ui/button";
 type Session = typeof auth.$Infer.Session;
 function Sidebar({
   session,
-  initialSongs,
 }: {
   session: Session | null;
-  initialSongs: SongAPI[];
 }) {
   const { data: playlist, isLoading } = usePlaylist();
   const { mutate: removeSong, isPending, variables } = useRemoveFromPlaylist();
@@ -74,7 +66,7 @@ function Sidebar({
                 <GoSidebarCollapse className="size-8 text-primary-text" />
               )}
             </button>
-            {session && <AddPlaylistDialog initialSongs={initialSongs} />}
+            {session && <AddPlaylistDialog/>}
           </div>
         </div>
 
@@ -183,23 +175,6 @@ function Sidebar({
             </Link>
           </div>
         )}
-
-        {/* <aside className="fixed top-16 left-2 w-30 h-[90vh] flex flex-col">
-            <button onClick={() => setIsOpen(!isOpen)} className="">
-              <GoSidebarCollapse className="size-6 text-primary-text" />{" "}
-            </button>
-            <div className="">
-              {playlist?.songs.map((song) => (
-                <Image
-                  key={song._id}
-                  alt="playlist"
-                  src={song.image_music}
-                  width={30}
-                  height={30}
-                />
-              ))}
-            </div>
-          </aside> */}
       </aside>
     </>
   );

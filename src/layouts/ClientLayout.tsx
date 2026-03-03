@@ -15,13 +15,12 @@ export async function ClientLayout({
   session,
   initialSongs,
 }: Readonly<{ children: React.ReactNode; session: Session | null, initialSongs: SongAPI[]}>) {
-  const initialPlaylist = await fetchPlaylist();
 
   return (
     <div className="min-h-screen">
       <Navbar session={session} />
       <main className="">
-        <Sidebar session={session} initialSongs={initialSongs} initialPlaylist={initialPlaylist} />
+        <Sidebar session={session}/>
         {children}
       </main>
       <MusicPlayer />

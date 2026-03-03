@@ -3,8 +3,7 @@
 import { auth } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import { GoSearch } from "react-icons/go";
+import React, { useState } from "react";
 import { MdHome } from "react-icons/md";
 import {
   DropdownMenu,
@@ -15,10 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/actions/auth-actions";
-import { useMusicStore } from "@/stores/useMusicStore";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SongAPI } from "@/types/type";
-import { reqChatBot } from "@/lib/actions/chatbot-actions";
 import Chatbot from "./Chatbot";
 import { useDebounce } from "./utils/useDebounce";
 import { usePlayerStore } from "@/stores/usePlayerStore";
@@ -38,8 +33,6 @@ function Navbar({ session }: { session: Session | null }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isActive, setIsActive] = useState(false);
-
-  const arraySkeleton = Array.from({ length: 5 });
 
   const handleLogout = async () => {
     await signOut();

@@ -28,7 +28,7 @@ export async function getChatHistory() {
   }));
 }
 
-export async function reqChatBot(prompt: string) {
+export async function reqChatbot(prompt: string) {
   const { userId } = await requireUser();
   if (!userId) throw new Error("Unthorization");
 
@@ -44,7 +44,7 @@ export async function reqChatBot(prompt: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "tngtech/deepseek-r1t2-chimera:free",
+      model: "stepfun/step-3.5-flash:free",
       messages: [
         {
           role: "system",

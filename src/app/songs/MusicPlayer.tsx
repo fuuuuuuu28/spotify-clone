@@ -2,7 +2,6 @@
 
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { SongAPI } from "@/types/type";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { CiShuffle } from "react-icons/ci";
