@@ -8,39 +8,57 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { LuPlus } from "react-icons/lu";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { Playlist, SongAPI } from "@/types/type";
+import { addToPlaylist } from "@/lib/actions/playlists-actions";
+import { useAddToPlaylist, usePlaylist } from "@/hooks/useHandlePlaylist";
+import { toast } from "sonner";
+import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
+import { usePaginatedSongs } from "@/hooks/usePaginatedSongs";
 
-function AddPlaylist() {
-  const { songsAPI, playlist, setPlaylist, fetchPlaylist, isLoading } =
-    usePlayerStore();
+function AddPlaylistDialog({ initialSongs }: { initialSongs: SongAPI[] }) {
+  const [page, setPage] = useState(1);
+  const { data: playlist } = usePlaylist();
+  const { mutate: addSong, isPending, variables } = useAddToPlaylist();
+  const { data:songPages, isFetching, isLoading } = usePaginatedSongs(page);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [message, setMessage] = useState("");
-  const songsPerPage = 5;
+  const totalPages = songPages?.totalPages ?? 1;
+  // console.log("first: ",songs)
 
-  const totalPages = Math.ceil(songsAPI.length / songsPerPage);
-  const startIndex = (currentPage - 1) * songsPerPage;
-  const songsPlaylist = songsAPI.slice(startIndex, startIndex + songsPerPage);
+  const isAddingSong = (songId: string) =>
+    isPending && variables?._id === songId;
 
-  useEffect(() => {
-    fetchPlaylist();
-  }, [fetchPlaylist]);
+  const handleAdd = (song: SongAPI) => {
+    addSong(song, {
+      onSuccess: (res) => {
+        // server action trả string
+        if (res === "Already have this song") {
+          toast.warning(`"${song.name_music}" đã có trong playlist`);
+          return;
+        }
+        toast.success(`Đã thêm "${song.name_music}" 🎵`);
+      },
 
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-    }
+      onError: () => {
+        toast.error("Thêm bài hát thất bại");
+      },
+    });
   };
 
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
+  // const handleNext = () => {
+  //   if (currentPage < totalPages) {
+  //     setCurrentPage((prev) => prev + 1);
+  //   }
+  // };
+
+  // const handlePrev = () => {
+  //   if (currentPage > 1) {
+  //     setCurrentPage((prev) => prev - 1);
+  //   }
+  // };
 
   return (
     <Dialog>
@@ -56,7 +74,7 @@ function AddPlaylist() {
           <Separator className="text-primary-text" />
         </DialogHeader>
         <div className="overflow-y-auto scroll h-[150px] space-y-3">
-          {playlist?.songs.map((song) => (
+          {playlist?.songs?.map((song) => (
             <div key={song._id} className="flex items-center justify-between ">
               <div className="flex items-center gap-2">
                 <Image
@@ -77,9 +95,9 @@ function AddPlaylist() {
           ))}
         </div>
         <Separator className="text-primary-text" />
-        <div className="space-y-2">
-          {songsPlaylist.map((song) => (
-            <div key={song._id} className="flex items-center justify-between">
+        <div className="max-h-80 space-y-2 pr-2 overflow-y-auto scroll">
+          {songPages?.map((song:SongAPI) => (
+            <div key={song._id} className="flex items-center justify-between ">
               <div className="w-full flex items-center gap-2">
                 <Image
                   alt="songs"
@@ -96,43 +114,47 @@ function AddPlaylist() {
                 </div>
               </div>
               <div className="flex flex-col">
-                <button
-                  onClick={() => setPlaylist(song)}
+                {!playlist?.songs?.some((s) => s.externalId === song._id) &&
+                
+                (<button
+                  onClick={() => handleAdd(song)}
+                  disabled={isAddingSong(song._id)}
                   className="min-w-[120px] bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
                 >
-                  {isLoading.playlistFetch.addingSongId === song._id ? (
+                  {isAddingSong(song._id) ? (
                     <Loader className="mx-auto size-5 animate-spin" />
                   ) : (
                     "Add to playlist"
                   )}
-                </button>
-                {isLoading.playlistFetch.duplicated &&
+                </button>)
+                }
+                {/* {isLoading.playlistFetch.duplicated &&
                   isLoading.playlistFetch.duplicatedSongId === song._id && (
                     <span className="text-center text-sm text-red-400">
                       You already have this song
                     </span>
-                  )}
+                  )} */}
               </div>
             </div>
           ))}
         </div>
         <div className="flex items-center justify-between mt-4">
           <button
-            onClick={handlePrev}
-            disabled={currentPage === 1}
+            onClick={() => setPage((p) => p - 1)}
+            disabled={isLoading || page==1}
             className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
           >
-            Previous
+            {isLoading ? <Loader className="animate-spin" /> : "Previous"}
           </button>
           <span className="text-secondary-text">
-            Page {currentPage} / {totalPages}
+            Page {page}
           </span>
           <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
+            onClick={() => setPage((p) =>  p + 1)}
+            disabled={isLoading || page==15}
             className="bg-primary-text p-2 rounded-md hover:bg-secondary-text duration-300 cursor-pointer"
           >
-            Next
+            {isLoading ? <Loader className="animate-spin"/> :"Next"}
           </button>
         </div>
       </DialogContent>
@@ -140,4 +162,4 @@ function AddPlaylist() {
   );
 }
 
-export default AddPlaylist;
+export default AddPlaylistDialog;

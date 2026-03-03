@@ -1,139 +1,34 @@
-import { Playlist, Song, SongAPI } from "@/types/type";
-import axios from "axios";
+import { SongAPI } from "@/types/type";
 import { create } from "zustand";
 
 interface PlayerStore {
-  isLoading: {
-    songs: boolean;
-    search: boolean;
-    random: boolean;
-    playlistAdd: boolean;
-    playlistDelete: {
-      deleting: boolean;
-      deletingSongId: string | null;
-    };
-    playlistFetch: {
-      fetching: boolean;
-      duplicated: boolean;
-      duplicatedSongId: string | null;
-      addingSongId: string | null;
-    };
-  };
-  error: string | null;
-  songs: Song[];
-  currentIndex: number;
-  currentSong: Song | null;
+  volume: number;
+  isRepeat: boolean;
+  isRandom: boolean;
+  lastPlayedSongId: string | null;
   isPlaying: boolean;
-  randomSongsAPI: SongAPI[];
-  playlist: Playlist | null;
   songsAPI: SongAPI[];
   currentSongAPI: SongAPI | null;
-  pages: number;
-  searchResults: SongAPI[];
-  searchQuery: string;
 
-  setPages: (page: number) => void;
-  fetchSongs: (page: number) => Promise<void>;
-  fetchSearch: (query: string, page: number) => Promise<void>;
-  setCurrentSong: (song: SongAPI) => void;
   setIsPlaying: (value: boolean) => void;
-  fetchRandomSong: () => Promise<void>;
-  setPlaylist: (song: SongAPI) => Promise<void>;
-  fetchPlaylist: () => Promise<void>;
-  deleteSong: (songId: string) => Promise<void>;
+  setCurrentSong: (song: SongAPI) => void;
+  setVolume: (value: number) => void;
+  setRepeat: (value: boolean) => void;
+  setRandom: (value: boolean) => void;
+  hydrateFromStorage: () => void;
 }
 
-export const usePlayerStore = create<PlayerStore>((set, get) => ({
-  isLoading: {
-    songs: false,
-    search: false,
-    random: false,
-    playlistAdd: false,
-    playlistDelete: {
-      deleting: false,
-      deletingSongId: null,
-    },
-    playlistFetch: {
-      fetching: false,
-      duplicated: false,
-      duplicatedSongId: null,
-      addingSongId: null,
-    },
-  },
-  error: null,
-  songs: [],
-  currentIndex: -1,
-  currentSong: null,
+export const usePlayerStore = create<PlayerStore>((set) => ({
+  volume: 75,
+  isRepeat: false,
+  isRandom: false,
+  lastPlayedSongId: null,
   isPlaying: false,
-  randomSongsAPI: [],
-  playlist: null,
   songsAPI: [],
   currentSongAPI: null,
-  pages: 1,
-  searchResults: [],
-  searchQuery: "",
-
-  setPages: (page) => {
-    set({ pages: page });
-  },
-
-  fetchSongs: async (page) => {
-    set((state) => ({
-      isLoading: { ...state.isLoading, songs: true },
-      error: null,
-    }));
-    try {
-      const res = await axios.get(
-        "https://v2-api-kaito-music.vercel.app/api/music/top-views",
-        {
-          params: { _limit: 20, _page: page, _type: "million" },
-        }
-      );
-
-      set((state) => ({
-        songsAPI:
-          page === 1 ? res.data.data : [...state.songsAPI, ...res.data.data],
-        pages: page,
-      }));
-    } catch (error: any) {
-      console.log("fetchSongs store error: ", error);
-      set({ error: error.response.data.message });
-    } finally {
-      set((state) => ({ isLoading: { ...state.isLoading, songs: false } }));
-    }
-  },
-
-  fetchSearch: async (query, page = 1) => {
-    set((state) => ({
-      isLoading: { ...state.isLoading, search: true },
-      searchQuery: query,
-    }));
-    try {
-      const res = await axios.get(
-        "https://v2-api-kaito-music.vercel.app/api/search",
-        {
-          params: {
-            query,
-            _limit: 20,
-            _page: page,
-          },
-        }
-      );
-
-      set({
-        searchResults: res.data.data,
-        pages: page,
-      });
-    } catch (error: any) {
-      console.log("Search error:", error);
-      set({ error: error?.response?.data?.message || "Search failed" });
-    } finally {
-      set((state) => ({ isLoading: { ...state.isLoading, search: false } }));
-    }
-  },
 
   setCurrentSong: (song) => {
-    // console.log("current: ",song)
+    sessionStorage.setItem("currentSong", JSON.stringify(song));
     set({ currentSongAPI: song, isPlaying: true });
   },
 
@@ -141,131 +36,31 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({ isPlaying: value });
   },
 
-  fetchRandomSong: async () => {
-    set((state) => ({
-      isLoading: { ...state.isLoading, random: true },
-      error: null,
-    }));
-    try {
-      let randomPage = Math.floor(Math.random() * 15) + 1;
-      const res = await axios.get(
-        "https://v2-api-kaito-music.vercel.app/api/music/top-views",
-        {
-          params: { _limit: 20, _page: randomPage, _type: "million" },
-        }
-      );
-      // console.log(res.data.data);
-      set({ randomSongsAPI: res.data.data });
-    } catch (error: any) {
-      console.log("randomSongsAPI store error", error);
-      set({ error: error.response.data.message });
-    } finally {
-      set((state) => ({
-        isLoading: { ...state.isLoading, random: false },
-      }));
-    }
+  setVolume: (value) => {
+    localStorage.setItem("volume", JSON.stringify(value));
+    set({ volume: value });
   },
 
-  setPlaylist: async (song) => {
-    set((state) => ({
-      isLoading: {
-        ...state.isLoading,
-        playlistFetch: {
-          ...state.isLoading.playlistFetch,
-          addingSongId: song._id,
-          duplicated: false,
-          duplicatedSongId: null,
-        },
-      },
-      error: null,
-    }));
-    try {
-      const res = await axios.post("/api/playlists", { song });
-      console.log(res);
-      if (res.data.message === "Already have this song") {
-        set((state) => ({
-          isLoading: {
-            ...state.isLoading,
-            playlistFetch: {
-              ...state.isLoading.playlistFetch,
-              duplicated: true,
-              duplicatedSongId: song._id,
-            },
-          },
-        }));
-        return;
-      }
-
-      set({ playlist: res.data.playlist });
-    } catch (error: any) {
-      console.log("setPlaylist store error: ", error);
-      set({ error: error.response.data.message });
-    } finally {
-      set((state) => ({
-        isLoading: {
-          ...state.isLoading,
-          playlistAdd: false,
-          playlistFetch: {
-            ...state.isLoading.playlistFetch,
-            addingSongId: null,
-          },
-        },
-      }));
-    }
+  setRepeat: (value) => {
+    localStorage.setItem("isRepeat", JSON.stringify(value));
+    set({ isRepeat: value });
   },
 
-  fetchPlaylist: async () => {
-    set((state) => ({
-      isLoading: {
-        ...state.isLoading,
-        playlistFetch: { ...state.isLoading.playlistFetch, fetching: true },
-      },
-      error: null,
-    }));
-    try {
-      const res = await axios.get("/api/playlists");
-
-      set({ playlist: res.data.playlist });
-    } catch (error: any) {
-      console.log("fetchPlaylist store error: ", error);
-      set({ error: error.response.data.message });
-    } finally {
-      set((state) => ({
-        isLoading: {
-          ...state.isLoading,
-          playlistFetch: { ...state.isLoading.playlistFetch, fetching: false },
-        },
-      }));
-    }
+  setRandom: (value) => {
+    localStorage.setItem("isRandom", JSON.stringify(value));
+    set({ isRandom: value });
   },
 
-  deleteSong: async (songId) => {
-    set((state) => ({
-      isLoading: {
-        ...state.isLoading,
-        playlistDelete: {
-          deleting: true,
-          deletingSongId: songId,
-        },
-      },
-      error: null,
-    }));
-    try {
-      const res = await axios.delete("/api/playlists", { data: { songId } });
-      set({ playlist: res.data.playlist });
-    } catch (error: any) {
-      console.log("deleteSong store error: ", error);
-      set({ error: error.response.data.message });
-    } finally {
-      set((state) => ({
-        isLoading: {
-          ...state.isLoading,
-          playlistDelete: {
-            deleting: true,
-            deletingSongId: songId,
-          },
-        },
-      }));
-    }
+  hydrateFromStorage: () => {
+    const volume = localStorage.getItem("volume");
+    const isRepeat = localStorage.getItem("isRepeat");
+    const isRandom = localStorage.getItem("isRandom");
+    const currentSong = sessionStorage.getItem("currentSong");
+    set({
+      volume: volume ? JSON.parse(volume) : 75,
+      isRepeat: isRepeat ? JSON.parse(isRepeat) : false,
+      isRandom: isRandom ? JSON.parse(isRandom) : false,
+      currentSongAPI: currentSong ? JSON.parse(currentSong) : null,
+    });
   },
 }));

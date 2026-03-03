@@ -1,6 +1,6 @@
 "use client";
 import { auth } from "@/lib/auth";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
@@ -8,56 +8,54 @@ import { FaPlay } from "react-icons/fa";
 import { LuLoaderCircle, LuPlus } from "react-icons/lu";
 import RandomSongs from "./RandomSongs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LucideRefreshCcw } from "lucide-react";
+import { SongAPI } from "@/types/type";
+import { fetchSongs } from "@/lib/api/song-api";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
+import { useRandomSong } from "@/hooks/useRandomSong";
+import ArtistSongPopover from "../components/ArtistSongPopover";
 
 type Session = typeof auth.$Infer.Session;
-function AllSongs({ session }: { session: Session | null }) {
-  const {
-    pages,
-    setPages,
-    fetchSongs,
-    currentSongAPI,
-    setCurrentSong,
-    isPlaying,
-    isLoading,
-    songsAPI,
-  } = usePlayerStore();
-  //Dùng để đọc toàn bộ container scroll chứa songs
-  const songNextPage = useRef<HTMLDivElement | null>(null);
-  //Dùng để gán cho vị trí cụ thể trong songs
-  const firstNewSongRef = useRef<HTMLDivElement | null>(null);
-  
-  const [previousSongCount, setPreviousSongCount] = useState(0);
+function AllSongs({
+  session,
+  initialSongs,
+  randomSongs,
+}: {
+  session: Session | null;
+  initialSongs: SongAPI[];
+  randomSongs: SongAPI[];
+}) {
+  const { currentSongAPI, setCurrentSong, isPlaying } = usePlayerStore();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteSongs(initialSongs);
+// console.log("first", data)
+  const songs = data?.pages.flat() ?? [];
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const arraySkeleton = Array.from({ length: 5 });
-  useEffect(() => {
-    fetchSongs(1);
-    // console.log("session: ",session)
-  }, [fetchSongs]);
-
-  const handlePage = (newPage: number) => {
-    setPages(newPage);
-    setPreviousSongCount(songsAPI.length);
-    fetchSongs(newPage);
-  };
 
   useEffect(() => {
-    if (previousSongCount > 0 && songsAPI.length > previousSongCount) {
-      // ✅ Scroll đến song đầu tiên của page mới
-      if (firstNewSongRef.current) {
-        //scrollIntoView: cuộn thông thường
-        firstNewSongRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "start",
-        });
-      }
-      setPreviousSongCount(0);
-    }
-  }, [songsAPI, previousSongCount]);
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
 
   return (
-    <div className="min-h-[90vh] my-16 bg-background-theme ml-24 mr-2 md:ml-80 rounded-lg overflow-y-auto overflow-x-hidden">
+    <div
+      className={`min-h-[90vh] transition-all duration-300 ease-in-out
+  ${currentSongAPI ? "pb-22" : "pb-2"} pt-16 bg-background-theme ml-24 mr-2 md:ml-80 rounded-lg overflow-y-auto overflow-x-hidden`}
+    >
       <div className="min-h-[50vh] bg-gradient-to-b from-emerald-500 to-background-theme px-8 py-4">
         <div className="flex flex-col transition-all duration-200 ease-in-out">
           {!currentSongAPI && (
@@ -121,11 +119,8 @@ function AllSongs({ session }: { session: Session | null }) {
       <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
         Music for you
       </h2>
-      <div
-        ref={songNextPage}
-        className="flex items-center overflow-x-auto gap-2 px-4 py-2 scroll"
-      >
-        {isLoading.songs ? (
+      <div className="flex items-center overflow-x-auto gap-2 p-4 scroll">
+        {isLoading ? (
           <>
             {arraySkeleton.map((_, index) => (
               <div
@@ -140,10 +135,9 @@ function AllSongs({ session }: { session: Session | null }) {
           </>
         ) : (
           <>
-            {songsAPI.map((song,index) => (
+            {songs.map((song, index) => (
               <div
                 key={song._id}
-                 ref={index === previousSongCount ? firstNewSongRef : null}
                 onClick={() => setCurrentSong(song)}
                 className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
@@ -159,27 +153,31 @@ function AllSongs({ session }: { session: Session | null }) {
                     <FaPlay />
                   </button>
                 </div>
-                <span className="block w-full text-secondary-text font-semibold truncate pr-1">
+                <span className="block w-full text-primary-text font-semibold truncate pr-1">
                   {song.name_music}
                 </span>
+                <div
+                  className=""
+                >
+                  <span className="block w-full text-secondary-text text-xs font-semibold truncate pr-1 hover:underline">
+                    {/* {song.name_singer} */}
+                    <ArtistSongPopover artist={song.name_singer} />
+                  </span>
+                </div>
               </div>
             ))}
           </>
         )}
-        <button
-          className="cursor-pointer"
-          onClick={() => handlePage(pages + 1)}
+        <div
+          ref={loadMoreRef}
+          className="w-10 h-10 m-4 flex items-center justify-center"
         >
-          {isLoading.songs ? (
-            <LuLoaderCircle className="size-10 rounded-full bg-primary-text text-black hover:bg-secondary-text duration-300 animate-spin" />
-          ) : (
-            <ArrowRight className="size-10 rounded-full bg-primary-text text-black hover:bg-secondary-text duration-300" />
-          )}
-        </button>
+          {isFetchingNextPage && <LucideRefreshCcw className="animate-spin text-white" />}
+        </div>
       </div>
 
       {/*Random Music */}
-      <RandomSongs />
+      <RandomSongs randomSongs={randomSongs} />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 "use client";
+import { uploadSong } from "@/lib/actions/songs-actions";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,13 +30,9 @@ function Upload() {
     formData.append("audioFile", audio);
 
     try {
-      const res = await axios.post("/api/songs", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await uploadSong(formData)
       // console.log(res.data);
-      setMessage(res.data.message || "Upload thành công");
+      setMessage(res.message || "Upload thành công");
       setTitle("");
       setArtist("");
       setImage(null);

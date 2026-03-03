@@ -1,49 +1,70 @@
 "use client";
 
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useMusicStore } from "@/stores/useMusicStore";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { VscLibrary } from "react-icons/vsc";
 import { TfiMenuAlt } from "react-icons/tfi";
-import AddPlaylist from "./songs/AddPlaylist";
+import AddPlaylistDialog from "./AddPlaylistDialog";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { FaTrash } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LuLoaderCircle } from "react-icons/lu";
+import { Playlist, SongAPI } from "@/types/type";
+import {
+  addToPlaylist,
+  removeFromPlaylist,
+} from "@/lib/actions/playlists-actions";
+
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import { usePlaylist, useRemoveFromPlaylist } from "@/hooks/useHandlePlaylist";
+import { toast } from "sonner";
+import { Button } from "../../components/ui/button";
 
 type Session = typeof auth.$Infer.Session;
-function Sidebar({ session }: { session: Session | null }) {
-  const {
-    fetchSongs,
-    playlist,
-    fetchPlaylist,
-    setCurrentSong,
-    deleteSong,
-    isLoading,
-  } = usePlayerStore();
+function Sidebar({
+  session,
+  initialSongs,
+}: {
+  session: Session | null;
+  initialSongs: SongAPI[];
+}) {
+  const { data: playlist, isLoading } = usePlaylist();
+  const { mutate: removeSong, isPending, variables } = useRemoveFromPlaylist();
+  const { currentSongAPI, setCurrentSong } = usePlayerStore();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const arraySkeleton = Array.from({ length: 5 });
+  const isDeleting = (songId: string) => isPending && variables === songId;
+  const handleDelete = (songId: string) => {
+    removeSong(songId, {
+      onSuccess: () => {
+        // server action trả string
+        toast.success("Đã xóa bài hát",{position:"top-left"})
+      },
 
-  useEffect(() => {
-    fetchSongs;
-    fetchPlaylist();
-  }, [fetchSongs, fetchPlaylist]);
+      onError: (error) => {
+        console.log("asdad",error)
+        toast.error("Xóa bài hát thất bại",{position:"top-left"});
+      },
+    });
+  };
+
+  const arraySkeleton = Array.from({ length: 5 });
 
   return (
     <>
       <aside
-        className={`fixed left-2 top-16 w-75 h-[calc(100vh-150px)] mb-100 overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
+        className={`fixed left-2 top-16 w-75 ${currentSongAPI ? "pb-4" : "pb-24"} overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
           isOpen ? "translate-x-0" : "-translate-x-[75%]"
         } md:translate-x-0`}
       >
         <div className="flex items-center justify-between md:px-4 md:py-2 px-6 py-3 border-b-1">
           <VscLibrary className="size-8 text-primary-text" />
           <span className="text-primary-text text-md font-semibold">
-            Your library
+            Your playlists
           </span>
           <div className="flex flex-col items-center  space-y-3 ">
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
@@ -53,7 +74,7 @@ function Sidebar({ session }: { session: Session | null }) {
                 <GoSidebarCollapse className="size-8 text-primary-text" />
               )}
             </button>
-            {session && <AddPlaylist />}
+            {session && <AddPlaylistDialog initialSongs={initialSongs} />}
           </div>
         </div>
 
@@ -69,7 +90,7 @@ function Sidebar({ session }: { session: Session | null }) {
         {/* Playlists */}
         {session ? (
           <div className="h-[calc(100vh-320px)] overflow-y-auto scroll">
-            {isLoading.playlistFetch.fetching ? (
+            {isLoading ? (
               <>
                 {arraySkeleton.map((_, index) => (
                   <div
@@ -92,51 +113,60 @@ function Sidebar({ session }: { session: Session | null }) {
                 ))}
               </>
             ) : (
-              <div className="">
-                {playlist?.songs.map((song) => (
-                  <div
-                    key={song._id}
-                    className={`flex ${
-                      isOpen ? "flex-row" : "flex-row-reverse"
-                    } md:flex-row md:items-center justify-between  `}
-                  >
-                    <div
-                      onClick={() => setCurrentSong(song)}
-                      className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer"
-                    >
-                      <Image
-                        alt="cover-5"
-                        src={song.image_music}
-                        width={500}
-                        height={500}
-                        className="size-16 rounded-lg"
-                      />
-                      <div
-                        className={`md:block ${
-                          isOpen ? "" : "hidden"
-                        } space-y-2`}
-                      >
-                        <h2 className="text-primary-text text-lg font-semibold">
-                          {song.name_music}{" "}
-                        </h2>
-                        <span className="text-secondary-text text-sm">
-                          {song.name_singer}
-                        </span>
-                      </div>
-                    </div>
-                    <div
-                      onClick={() => deleteSong(song._id)}
-                      className="hover:bg-hover rounded-full p-4 duration-300 cursor-pointer"
-                    >
-                      {isLoading.playlistDelete.deleting &&
-                      isLoading.playlistDelete.deletingSongId === song._id ? (
-                        <LuLoaderCircle className="animate-spin text-primary-text" />
-                      ) : (
-                        <FaTrash className="text-primary-text " />
-                      )}
-                    </div>
+              <div className="w-full">
+                {!playlist?.songs || playlist?.songs.length == 0 ? (
+                  <div className="text-center ">
+                    <span className="text-primary-text text-md font-semibold">
+                      Không có bài hát
+                    </span>
                   </div>
-                ))}
+                ) : (
+                  <>
+                    {playlist?.songs?.map((song) => (
+                      <div
+                        key={song._id}
+                        className={`flex ${
+                          isOpen ? "flex-row" : "flex-row-reverse"
+                        } md:flex-row md:items-center justify-between  `}
+                      >
+                        <div
+                          onClick={() => setCurrentSong(song)}
+                          className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer"
+                        >
+                          <Image
+                            alt="cover-5"
+                            src={song.image_music}
+                            width={500}
+                            height={500}
+                            className="size-16 rounded-lg"
+                          />
+                          <div
+                            className={`md:block ${
+                              isOpen ? "" : "hidden"
+                            } space-y-2`}
+                          >
+                            <h2 className="text-primary-text text-lg font-semibold">
+                              {song.name_music}{" "}
+                            </h2>
+                            <span className="text-secondary-text text-sm">
+                              {song.name_singer}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => handleDelete(song._id)}
+                          className="hover:bg-hover rounded-full p-4 duration-300 cursor-pointer"
+                        >
+                          {isDeleting(song._id) ? (
+                            <LuLoaderCircle className="animate-spin text-primary-text" />
+                          ) : (
+                            <FaTrash className="text-primary-text " />
+                          )}
+                        </Button>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </div>

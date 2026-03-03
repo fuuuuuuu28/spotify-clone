@@ -13,10 +13,17 @@ export type SongAPI ={
     name_singer:string,
     image_music:string,
     src_music:string,
+    externalId:string,
 }
 
 export type Playlist = {
     _id:string,
     songs: SongAPI[],
     user_id: string,
+}
+
+export type Message ={
+    _id:string,
+    role:"user" | "model",
+    content:string,
 }

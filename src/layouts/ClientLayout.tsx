@@ -1,22 +1,30 @@
-import MusicPlayer from "@/app/components/songs/MusicPlayer";
-import Navbar from "@/app/components/Navbar";
-import Sidebar from "@/app/components/Sidebar";
+
 import { auth } from "@/lib/auth";
 import React from "react";
+import { fetchPlaylist } from "@/lib/actions/playlists-actions";
+import MusicPlayer from "@/app/songs/MusicPlayer";
+import Sidebar from "@/app/components/Sidebar";
+import Navbar from "@/app/components/Navbar";
+import { fetchSongs } from "@/lib/api/song-api";
+import { SongAPI } from "@/types/type";
+
 
 type Session = typeof auth.$Infer.Session;
 export async function ClientLayout({
   children,
   session,
-}: Readonly<{ children: React.ReactNode; session: Session | null }>) {
+  initialSongs,
+}: Readonly<{ children: React.ReactNode; session: Session | null, initialSongs: SongAPI[]}>) {
+  const initialPlaylist = await fetchPlaylist();
+
   return (
     <div className="min-h-screen">
       <Navbar session={session} />
       <main className="">
-        <Sidebar session={session} />
+        <Sidebar session={session} initialSongs={initialSongs} initialPlaylist={initialPlaylist} />
         {children}
       </main>
-        <MusicPlayer />
+      <MusicPlayer />
     </div>
   );
 }

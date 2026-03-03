@@ -1,6 +1,8 @@
 "use client";
 
+import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import { SongAPI } from "@/types/type";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { CiShuffle } from "react-icons/ci";
@@ -16,19 +18,25 @@ import { FaRepeat } from "react-icons/fa6";
 import { MdQueueMusic } from "react-icons/md";
 
 function MusicPlayer() {
+  const { songsAPI } = useMusicStore();
   const {
-    currentSong,
-    isPlaying,
+    volume,
+    setVolume,
+    isRepeat,
+    setRepeat,
+    isRandom,
+    setRandom,
     setIsPlaying,
+    isPlaying,
     setCurrentSong,
-    songsAPI,
     currentSongAPI,
+    hydrateFromStorage,
   } = usePlayerStore();
 
   const [process, setProcess] = useState(0);
-  const [volume, setVolume] = useState(75);
-  const [isRepeat, setIsRepeat] = useState(false);
-  const [isRandom, setIsRandom] = useState(false);
+  // const [volume, setVolume] = useState(75);
+  // const [isRepeat, setIsRepeat] = useState(false);
+  // const [isRandom, setIsRandom] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -53,11 +61,15 @@ function MusicPlayer() {
   };
 
   const handleUpdateTime = () => {
-    if (!audioRef.current || !audioRef.current.duration || isNaN(audioRef.current.duration)) {
+    if (
+      !audioRef.current ||
+      !audioRef.current.duration ||
+      isNaN(audioRef.current.duration)
+    ) {
       return;
     }
     setProcess(
-      (audioRef.current.currentTime / audioRef.current.duration) * 100
+      (audioRef.current.currentTime / audioRef.current.duration) * 100,
     );
   };
 
@@ -71,34 +83,36 @@ function MusicPlayer() {
 
   const handleNext = () => {
     const currentIndex = songsAPI.findIndex(
-      (s) => s._id === currentSongAPI?._id
+      (s) => s._id === currentSongAPI?._id,
     );
     const nextIndex = (currentIndex + 1) % songsAPI.length;
-    // console.log("songs: ",songsAPI[0])
-    // console.log("index", songsAPI.findIndex((s) => s._id === currentIndex?._id))
-    console.log("12", currentSong);
+    // console.log("songs: ",songsAPI[0]
+    console.log(
+      "index",
+      songsAPI.findIndex((s) => s._id === currentSongAPI?._id),
+    );
     setCurrentSong(songsAPI[nextIndex]);
   };
 
   const handlePrev = () => {
     const currentIndex = songsAPI.findIndex(
-      (s) => s._id === currentSongAPI?._id
+      (s) => s._id === currentSongAPI?._id,
     );
     const prevIndex = (currentIndex - 1 + songsAPI.length) % songsAPI.length;
     setCurrentSong(songsAPI[prevIndex]);
   };
 
   const handleRepeat = () => {
-    setIsRepeat(!isRepeat);
+    setRepeat(!isRepeat);
   };
 
   const handleShuffle = () => {
-    setIsRandom(!isRandom);
+    setRandom(!isRandom);
   };
 
   const handleRandom = () => {
     const currentIndex = songsAPI.findIndex(
-      (s) => s._id === currentSongAPI?._id
+      (s) => s._id === currentSongAPI?._id,
     );
     let randomIndex;
     do {
@@ -108,10 +122,12 @@ function MusicPlayer() {
   };
 
   const endedAudio = () => {
+    if (!audioRef.current) return;
     if (isRepeat) {
-      audioRef.current?.play();
-    }
-    if (isRandom) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play(); // nên play lại
+      return;
+    } else if (isRandom) {
       handleRandom();
     } else {
       handleNext();
@@ -134,9 +150,21 @@ function MusicPlayer() {
     }
   };
 
+  useEffect(() => {
+  if (audioRef.current) {
+    audioRef.current.volume = volume / 100;
+  }
+}, [volume]);
+
+  useEffect(()=>{
+    hydrateFromStorage()
+  },[])
+
   return (
-    <div className="fixed bottom-0 w-full h-22 bg-black z-50">
-      <div className="w-[95%] mx-auto flex items-center justify-between py-3">
+    <div
+      className={`fixed transition-transform duration-300 ease-in-out h-22 ${currentSongAPI ? "translate-y-0" : "translate-y-full"} bottom-0 w-full bg-black z-50`}
+    >
+      <div className=" w-[95%] mx-auto flex items-center justify-between py-3">
         {/* Song image */}
         <div className="w-[300px] hidden md:flex md:items-center gap-2 ">
           <Image
@@ -148,10 +176,10 @@ function MusicPlayer() {
           />
           <div className="">
             <h2 className="text-primary-text font-bold line-clamp-1">
-              {currentSongAPI?.name_singer}
+              {currentSongAPI?.name_music}
             </h2>
             <span className="text-secondary-text font-semibold">
-              {currentSongAPI?.name_music}
+              {currentSongAPI?.name_singer}
             </span>
           </div>
         </div>

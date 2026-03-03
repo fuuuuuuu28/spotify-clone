@@ -1,26 +1,29 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRandomSong } from "@/hooks/useRandomSong";
+import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import { SongAPI } from "@/types/type";
+import { LucideRefreshCcw } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { FaPlay } from "react-icons/fa";
 
-function RandomSongs() {
-  const { randomSongsAPI, fetchRandomSong, setCurrentSong, isLoading } =
-    usePlayerStore();
+function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
+  const { data, isLoading, isFetching, refetch } = useRandomSong();
+
+  const { setCurrentSong } = usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
 
-  useEffect(() => {
-    fetchRandomSong();
-  }, [fetchRandomSong]);
   return (
     <>
       <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
         Random songs
       </h2>
-      <div className="flex overflow-x-auto gap-2 px-4 py-2 scroll">
-        {isLoading.random ? (
+      <div className="flex items-center overflow-x-auto gap-2 p-4 scroll">
+        {isLoading ? (
           <>
             {arraySkeleton.map((_, index) => (
               <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
@@ -32,7 +35,7 @@ function RandomSongs() {
           </>
         ) : (
           <>
-            {randomSongsAPI.map((song) => (
+            {data?.map((song: SongAPI) => (
               <div
                 key={song._id}
                 onClick={() => setCurrentSong(song)}
@@ -50,13 +53,23 @@ function RandomSongs() {
                     <FaPlay />
                   </button>
                 </div>
-                <span className="block w-full text-secondary-text font-semibold truncate pr-1">
+                <span className="block w-full text-primary-text font-semibold truncate pr-1">
                   {song.name_music}
+                </span>
+                <span className="block w-full text-secondary-text text-xs font-semibold truncate pr-1 hover:underline">
+                  {song.name_singer}
                 </span>
               </div>
             ))}
           </>
         )}
+        <Button
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="p-2 rounded hover:bg-hover hover:cursor-pointer"
+        >
+          <LucideRefreshCcw className={`${isFetching ? "animate-spin" : ""}`} />
+        </Button>
       </div>
     </>
   );

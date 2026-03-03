@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { MdHome } from "react-icons/md";
 import {
@@ -15,21 +15,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/actions/auth-actions";
-import { usePlayerStore } from "@/stores/usePlayerStore";
+import { useMusicStore } from "@/stores/useMusicStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SongAPI } from "@/types/type";
+import { reqChatBot } from "@/lib/actions/chatbot-actions";
+import Chatbot from "./Chatbot";
+import { useDebounce } from "./utils/useDebounce";
+import { usePlayerStore } from "@/stores/usePlayerStore";
+import useSearchSong from "@/hooks/useSearchSong";
+import SearchInput from "./SearchInput";
 
 type Session = typeof auth.$Infer.Session;
+
 function Navbar({ session }: { session: Session | null }) {
-  const [keyword, setKeyWord] = useState("");
-  const [focus, setFocus] = useState(false);
-  const {
-    fetchSearch,
-    searchResults,
-    fetchSongs,
-    songsAPI,
-    isLoading,
-    setCurrentSong,
-  } = usePlayerStore();
+  const [keyword, setKeyword] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const debounceKeyword = useDebounce(keyword, 300);
+  
+  const { data, isLoading } = useSearchSong(debounceKeyword);
+  const { setCurrentSong } = usePlayerStore();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   const arraySkeleton = Array.from({ length: 5 });
 
@@ -37,180 +45,105 @@ function Navbar({ session }: { session: Session | null }) {
     await signOut();
   };
 
-  const handleSearch = async () => {
-    if (keyword.trim() !== "") {
-      fetchSearch(keyword, 1);
-    }
-  };
-
-  const handlePress = async (e: React.KeyboardEvent) => {
-    if (e.key == "Enter") {
-      handleSearch();
-    }
-  };
-
-  useEffect(() => {
-    if (keyword.trim() === "") {
-      fetchSongs(1);
-      return;
-    }
-
-    fetchSearch(keyword, 1);
-  }, [keyword]);
+  // const handleTest = async () => {
+  //   const test = await reqChatBot("Hello");
+  //   console.log("first", test);
+  // };
 
   return (
-    <nav className="fixed top-0 left-0 bg-black w-full h-16 flex items-center justify-between px-4 z-40">
-      <div className="flex items-center gap-2 ">
-        <Image
-          src="/images/logo.png"
-          alt="logo"
-          className="size-10"
-          width={500}
-          height={500}
-        />
-        <Link
-          href="/"
-          className="bg-background-theme rounded-full ml-4 p-2 hover:bg-hover hover:scale-105 duration-300"
-        >
-          <MdHome className="size-8 text-white">
-            <Link href="/" />
-          </MdHome>
-        </Link>
-        <div className="bg-background-theme hidden lg:flex items-center h-11 w-90 px-2 gap-3 text-primary-text rounded-full hover:bg-hover duration-300">
-          <GoSearch className="text-primary-text shrink-0" size={25} />
-          <input
-            className="h-full w-full outline-none placeholder:text-white"
-            type="text"
-            placeholder="What do you want to play?"
-            onChange={(e) => setKeyWord(e.target.value)}
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            onKeyPress={handlePress}
+    <>
+      <nav className="fixed top-0 left-0 bg-black w-full h-16 flex items-center justify-between px-4 z-40">
+        <div className="flex items-center gap-2 ">
+          {/* <button onClick={() =>handleTest()} className="bg-red-500">Click test</button> */}
+          <Image
+            src="/images/logo.png"
+            alt="logo"
+            className="size-10"
+            width={500}
+            height={500}
           />
+          <Link
+            href="/"
+            className="bg-background-theme rounded-full ml-4 p-2 hover:bg-hover hover:scale-105 duration-300"
+          >
+            <MdHome className="size-8 text-white">
+              <Link href="/" />
+            </MdHome>
+          </Link>
+
+          {/* Search function */}
+          <SearchInput keyword={keyword} setKeyword={setKeyword} open={open} setOpen={setOpen} data={data} isLoading={isLoading} setCurrentSong={setCurrentSong}/>
         </div>
 
-        {/* Render kết quả */}
-        <div
-          onMouseDown={(e) => e.preventDefault()}
-          className="absolute top-16 left-16 w-[500px] bg-black max-h-50 overflow-y-auto scroll rounded-b-xl"
-        >
-          {/* Input rỗng → hiện bài hát đề xuất */}
-          {keyword.trim() === "" &&
-            focus &&
-            songsAPI.map((song) => (
-              <div
-                key={song._id}
-                onClick={() => setCurrentSong(song)}
-                className="flex items-center gap-4 bg-background-theme m-4 p-4 text-white rounded-lg my-2 hover:bg-hover hover:cursor-pointer"
-              >
-                <Image
-                  src={song.image_music}
-                  alt="music"
-                  className="size-10"
-                  width={500}
-                  height={500}
-                />
-                <span>
-                  {song.name_music} – {song.name_singer}
-                </span>
-              </div>
-            ))}
-
-          {/* Có keyword → hiện search */}
-          {keyword.trim() !== "" &&
-            (isLoading.search ? (
-              <div>
-                {arraySkeleton.map((_, index) => (
-                  <div className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2">
-                    <Skeleton className="h-10 w-10" />
-                    <Skeleton className="w-60 h-5" />
-                  </div>
-                ))}
-              </div>
-            ) : searchResults.length == 0 ? (
-              <div className="text-center text-secondary-text p-4">
-                Không tìm thấy bài hát nào.
+        <div className="flex items-center justify-between">
+          <div className="hidden md:block border-r-2 border-primary-text gap-2 pr-6 space-x-5">
+            <span
+              onClick={() => {
+                setIsOpen(!isOpen);
+                setIsActive(!isActive);
+              }}
+              className={`p-2 rounded-xl font-bold text-md cursor-pointer hover:bg-secondary-text duration-100 ${isActive ? "bg-secondary-text" : "bg-white" }`}
+            >
+              Hỗ trợ AI
+            </span>
+            <span className="text-secondary-text font-bold text-md ">
+              Premium
+            </span>
+            <span className="text-secondary-text font-bold text-md ">
+              Support
+            </span>
+            <span className="text-secondary-text font-bold text-md">
+              Download
+            </span>
+          </div>
+          <div className="pl-6 space-x-5 ">
+            {session ? (
+              <div className="flex items-center gap-3 ">
+                {/* modal giúp không block mất body scroll */}
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <Image
+                      src={session.user.image ?? "/images/avatar.png"}
+                      alt={session.user.name ?? "User"}
+                      width={30}
+                      height={30}
+                      className="rounded-full transition-all hover:scale-115 duration-300 hover:cursor-pointer"
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>{session.user.email}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="hover:bg-hover cursor-pointer"
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
-              searchResults.map((song) => (
-                <div
-                  key={song._id}
-                  onClick={() => setCurrentSong(song)}
-                  className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2 hover:bg-hover hover:cursor-pointer"
+              <>
+                <Link
+                  href="/signup"
+                  className="text-secondary-text font-bold text-md hover:text-primary-text hover:text-lg duration-300"
                 >
-                  <Image
-                    src={song.image_music}
-                    alt="music"
-                    className="size-10"
-                    width={500}
-                    height={500}
-                  />
-                  <span>
-                    {song.name_music} – {song.name_singer}
-                  </span>
-                </div>
-              ))
-            ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="hidden md:block border-r-2 border-primary-text gap-2 pr-6 space-x-5">
-          <span className="text-secondary-text font-bold text-md ">
-            Premium
-          </span>
-          <span className="text-secondary-text font-bold text-md ">
-            Support
-          </span>
-          <span className="text-secondary-text font-bold text-md">
-            Download
-          </span>
-        </div>
-        <div className="pl-6 space-x-5 ">
-          {session ? (
-            <div className="flex items-center gap-3 ">
-              {/* modal giúp không block mất body scroll */}
-              <DropdownMenu modal={false}> 
-                <DropdownMenuTrigger>
-                  <Image
-                    src={session.user.image ?? "/images/avatar.png"}
-                    alt={session.user.name ?? "User"}
-                    width={30}
-                    height={30}
-                    className="rounded-full transition-all hover:scale-115 duration-300 hover:cursor-pointer"
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>{session.user.email}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="hover:bg-hover cursor-pointer"
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <>
-              <Link
-                href="/signup"
-                className="text-secondary-text font-bold text-md hover:text-primary-text hover:text-lg duration-300"
-              >
-                Sign up
-              </Link>
+                  Sign up
+                </Link>
 
-              <Link
-                href="/login"
-                className="font-semibold text-md bg-white py-3 px-6 rounded-full hover:scale-105 transition-all duration-300"
-              >
-                Login
-              </Link>
-            </>
-          )}
+                <Link
+                  href="/login"
+                  className="font-semibold text-md bg-white py-3 px-6 rounded-full hover:scale-105 transition-all duration-300"
+                >
+                  Login
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+      <Chatbot isOpen={isOpen} />
+    </>
   );
 }
 
