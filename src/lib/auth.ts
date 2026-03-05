@@ -7,7 +7,7 @@ import { connectionToDatabase } from "./mongoose";
 await connectionToDatabase();
 
 export const auth = betterAuth({
-  database: mongodbAdapter(mongoose.connection.db),
+  database: mongodbAdapter(mongoose.connection.db!),
   emailAndPassword: {
     enabled: true,
   },

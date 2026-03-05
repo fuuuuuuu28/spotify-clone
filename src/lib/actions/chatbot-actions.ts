@@ -3,9 +3,18 @@
 import { Message } from "@/models/model";
 import { auth } from "../auth";
 import { headers } from "next/headers";
+import { Types } from "mongoose";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 // console.log("first", OPENROUTER_API_KEY);
+
+type MessageType = {
+  _id: Types.ObjectId;
+  role: "user" | "model";
+  content: string;
+  user_id: string;
+  createdAt: Date;
+};
 
 async function requireUser() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -17,11 +26,11 @@ export async function getChatHistory() {
   const { userId } = await requireUser();
   if (!userId) throw new Error("Unthorization");
 
-  const messages = await Message.find({ user_id: userId })
+  const messages = (await Message.find({ user_id: userId })
     .sort({ createdAt: 1 })
-    .lean();
+    .lean()) as MessageType[] | [];
 
-  return messages.map((m) => ({
+  return messages?.map((m) => ({
     _id: m._id.toString(),
     role: m.role,
     content: m.content,
