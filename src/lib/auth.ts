@@ -3,11 +3,12 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
 import mongoose from "mongoose";
 import { connectionToDatabase } from "./mongoose";
+import { Db } from "mongodb";
 
 await connectionToDatabase();
 
 export const auth = betterAuth({
-  database: mongodbAdapter(mongoose.connection.db!),
+  database: mongodbAdapter(mongoose.connection.db as unknown as Db),
   emailAndPassword: {
     enabled: true,
   },
