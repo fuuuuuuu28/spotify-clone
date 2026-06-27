@@ -114,12 +114,9 @@ function MusicPlayer() {
       (s) => s._id === currentSongAPI?._id,
     );
     let randomIndex;
-<<<<<<< HEAD
-=======
     if (songsAPI.length <= 1) {
       return; // Không có bài hát khác để phát ngẫu nhiên
     }
->>>>>>> 4c8d154 (comeback)
     do {
       randomIndex = Math.floor(Math.random() * songsAPI.length);
     } while (randomIndex === currentIndex);
@@ -171,11 +168,7 @@ function MusicPlayer() {
     >
       <div className=" w-[95%] mx-auto flex items-center justify-between py-3">
         {/* Song image */}
-<<<<<<< HEAD
-        <div className="w-[300px] hidden md:flex md:items-center gap-2 ">
-=======
         <div className="w-75 hidden md:flex md:items-center gap-2 ">
->>>>>>> 4c8d154 (comeback)
           <Image
             alt="cover-11"
             src={currentSongAPI?.image_music || ""}
@@ -193,11 +186,7 @@ function MusicPlayer() {
           </div>
         </div>
         {/* Song controllers */}
-<<<<<<< HEAD
-        <div className="flex flex-col items-center gap-2 w-[300px] md:w-[600px]">
-=======
         <div className="flex flex-col items-center gap-2 w-75 md:w-150">
->>>>>>> 4c8d154 (comeback)
           {/* audio controllers */}
           <div className="flex items-center gap-5">
             <button
@@ -246,11 +235,7 @@ function MusicPlayer() {
 
           {/* audio process */}
           <div className="flex items-center gap-2 w-full">
-<<<<<<< HEAD
-            <span className="text-zinc-400 text-xs w-[40px] text-right">
-=======
             <span className="text-zinc-400 text-xs w-10 text-right">
->>>>>>> 4c8d154 (comeback)
               {formatTime(Number(audioRef.current?.currentTime || 0))}
             </span>
             <input
@@ -262,11 +247,7 @@ function MusicPlayer() {
                 background: `linear-gradient(to right, #1db954 ${process}%, #444 ${process}%)`,
               }}
             />
-<<<<<<< HEAD
-            <span className="text-zinc-400 text-xs w-[40px]">
-=======
             <span className="text-zinc-400 text-xs w-10">
->>>>>>> 4c8d154 (comeback)
               {formatTime(Number(audioRef.current?.duration || 0))}
             </span>
           </div>
@@ -291,11 +272,7 @@ function MusicPlayer() {
               type="range"
               value={volume}
               onChange={handleVolume}
-<<<<<<< HEAD
-              className="w-[80px] hidden md:block h-1 accent-emerald-500 bg-zinc-700 rounded-lg hover:cursor-pointer"
-=======
               className="w-20 hidden md:block h-1 accent-emerald-500 bg-zinc-700 rounded-lg hover:cursor-pointer"
->>>>>>> 4c8d154 (comeback)
             />
           </div>
         </div>

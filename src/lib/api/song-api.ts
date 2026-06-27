@@ -25,11 +25,7 @@ export async function fetchSongs(page: number = 1) {
 export async function fetchRandomSong() {
   try {
     const randomPage = Math.floor(Math.random() * 15) + 1;
-<<<<<<< HEAD
-    console.log("first", randomPage);
-=======
     // console.log("first", randomPage);
->>>>>>> 4c8d154 (comeback)
     const res = await fetch(
       `https://v2-api-kaito-music.vercel.app/api/music/top-views?_limit=20&_page=${randomPage}&_type=million`,
       { next: { revalidate: 60 } },

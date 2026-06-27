@@ -27,11 +27,7 @@ function ArtistSongPopover({ artist }: { artist: string }) {
         y: e.clientY + 12,
       });
       setOpen(true);
-<<<<<<< HEAD
-    }, 2000);
-=======
     }, 1000);
->>>>>>> 4c8d154 (comeback)
   };
 
   const scheduleClose = () => {

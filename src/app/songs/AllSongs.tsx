@@ -84,11 +84,7 @@ function AllSongs({
                 src={currentSongAPI.image_music}
                 className={`size-50 md:size-80 rounded-full border-4 border-black transition-transform duration-300 spin-slow ${
                   isPlaying ? "" : "paused"
-<<<<<<< HEAD
                 } ${currentSongAPI ? "translate-x-0" : "-translate-x-[80%]"}`}
-=======
-                } ${currentSongAPI ? "translate-x-0" : "translate-x-[-80%]"}`}
->>>>>>> 4c8d154 (comeback)
                 width={500}
                 height={500}
               />

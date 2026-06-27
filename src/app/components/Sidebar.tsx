@@ -49,19 +49,11 @@ function Sidebar({
   return (
     <>
       <aside
-<<<<<<< HEAD
-        className={`fixed left-2 top-16 w-75 ${currentSongAPI ? "pb-4" : "pb-24"} overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-[75%]"
-        } md:translate-x-0`}
-      >
-        <div className="flex items-center justify-between md:px-4 md:py-2 px-6 py-3 border-b-1">
-=======
         className={`fixed left-2 top-16 w-75 h-[calc(100vh-88px)] ${currentSongAPI ? "pb-4" : "pb-24"} overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
           isOpen ? "translate-x-0" : "translate-x-[-75%]"
         } md:translate-x-0`}
       >
         <div className="flex items-center justify-between md:px-4 md:py-2 px-6 py-3 border-b">
->>>>>>> 4c8d154 (comeback)
           <VscLibrary className="size-8 text-primary-text" />
           <span className="text-primary-text text-md font-semibold">
             Your playlists
@@ -94,10 +86,7 @@ function Sidebar({
               <>
                 {arraySkeleton.map((_, index) => (
                   <div
-<<<<<<< HEAD
-=======
                     key={index}
->>>>>>> 4c8d154 (comeback)
                     className={`flex ${
                       isOpen ? "flex-row" : "flex-row-reverse"
                     } md:flex-row md:items-center justify-between  `}
