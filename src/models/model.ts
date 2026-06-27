@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import { unique } from "next/dist/build/utils";
 
 const songSchema = new mongoose.Schema(
   {

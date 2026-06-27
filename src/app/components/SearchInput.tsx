@@ -45,7 +45,11 @@ function SearchInput({keyword, setKeyword, open,setOpen, data, isLoading, setCur
       {/* Render kết quả */}
       <div
         onMouseDown={(e) => e.preventDefault()}
+<<<<<<< HEAD
         className="absolute top-16 left-16 w-[500px] bg-black max-h-50 overflow-y-auto scroll rounded-b-xl"
+=======
+        className="absolute top-16 left-16 w-125 bg-black max-h-50 overflow-y-auto scroll rounded-b-xl"
+>>>>>>> 4c8d154 (comeback)
       >
         {/* Có keyword → hiện search */}
         {open &&
