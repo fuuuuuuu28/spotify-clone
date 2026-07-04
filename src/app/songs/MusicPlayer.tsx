@@ -35,12 +35,9 @@ function MusicPlayer({ initialSongs }: {initialSongs: SongAPI[]}) {
   } = usePlayerStore();
 
   const [process, setProcess] = useState(0);
-  // const [volume, setVolume] = useState(75);
-  // const [isRepeat, setIsRepeat] = useState(false);
-  // const [isRandom, setIsRandom] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-// console.log("s: ", songsAPI)
+  
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -72,17 +69,8 @@ function MusicPlayer({ initialSongs }: {initialSongs: SongAPI[]}) {
     setProcess(
       (audioRef.current.currentTime / audioRef.current.duration) * 100,
     );
-    // setCurrentTime(audioRef.current.currentTime);
   };
 
-  // const handleLoadedMetadata = () => {
-
-  //   if (!audioRef.current) return;
-
-  //   audioRef.current.currentTime = currentTime;
-  //   setCurrentTime(audioRef.current.currentTime);
-
-  // }
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {

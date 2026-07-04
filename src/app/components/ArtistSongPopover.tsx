@@ -8,16 +8,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistSongs } from "@/hooks/useArtistSong";
 import { SongAPI } from "@/types/type";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function ArtistSongPopover({ artist }: { artist: string }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const { data, isLoading } = useArtistSongs(artist, open);
 
+  const openTimer = useRef<NodeJS.Timeout | null>(null);
   const closeTimer = useRef<NodeJS.Timeout | null>(null);
 
   const openPopover = (e: React.MouseEvent) => {
+    if (openTimer.current) {
+      clearTimeout(openTimer.current);
+    }
     if (closeTimer.current) {
       clearTimeout(closeTimer.current);
     }
@@ -27,15 +31,19 @@ function ArtistSongPopover({ artist }: { artist: string }) {
         y: e.clientY + 12,
       });
       setOpen(true);
-    }, 1000);
+    }, 100);
   };
 
   const scheduleClose = () => {
+    if (openTimer.current) {
+      clearTimeout(openTimer.current);
+    }
     closeTimer.current = setTimeout(() => {
       setOpen(false);
-    }, 120);
+    }, 150);
   };
   // console.log("first", data)
+
 
   const songsByArtist = data?.slice(0, 5);
   return (
