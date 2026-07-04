@@ -19,7 +19,7 @@ function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
 
   return (
     <>
-      <div className="flex items-center px-8 py-2">
+      <div className="flex items-center py-2">
         <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
           Random songs
         </h2>

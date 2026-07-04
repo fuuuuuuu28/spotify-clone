@@ -48,39 +48,40 @@ function Sidebar({
   return (
     <>
       <aside
-        className={`fixed left-2 top-16 w-75 h-[calc(100vh-88px)] ${currentSongAPI ? "pb-4" : "pb-24"} overflow-hidden bg-background-theme ml-2 rounded-lg transform transition-transform duration-300 z-40 md:z-0 ${
+        className={`fixed left-2 top-16 w-75 ${currentSongAPI ? "h-[calc(100vh-152px)]" : "h-[calc(100vh-80px)]"} overflow-hidden bg-background-theme ml-2 rounded-lg transition-[height,transform] duration-300 ease-in-out z-40 md:z-0 ${
           isOpen ? "translate-x-0" : "translate-x-[-75%]"
         } md:translate-x-0`}
       >
-        <div className="flex items-center justify-between md:px-4 md:py-2 px-6 py-3 border-b">
-          <VscLibrary className="size-8 text-primary-text" />
-          <span className="text-primary-text text-md font-semibold">
-            Your playlists
-          </span>
-          <div className="flex flex-col items-center  space-y-3 ">
-            <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
-              {isOpen ? (
-                <GoSidebarExpand className="size-8 text-primary-text" />
-              ) : (
-                <GoSidebarCollapse className="size-8 text-primary-text" />
-              )}
-            </button>
-            {session && <AddPlaylistDialog/>}
+        <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between md:px-4 md:py-2 px-6 py-3 border-b">
+            <VscLibrary className="size-8 text-primary-text" />
+            <span className="text-primary-text text-md font-semibold">
+              Your playlists
+            </span>
+            <div className="flex flex-col items-center  space-y-3 ">
+              <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
+                {isOpen ? (
+                  <GoSidebarExpand className="size-8 text-primary-text" />
+                ) : (
+                  <GoSidebarCollapse className="size-8 text-primary-text" />
+                )}
+              </button>
+              {session && <AddPlaylistDialog/>}
+            </div>
           </div>
-        </div>
 
-        <h2 className="text-primary-text px-4 py-2">Playlists</h2>
-        <div className="hidden md:flex items-center justify-between px-4 py-2">
-          <div className=""></div>
-          <div className="flex items-center gap-2 ">
-            <h2 className="text-secondary-text">Recents</h2>
-            <TfiMenuAlt className="size-8 text-secondary-text" />
+          <h2 className="text-primary-text px-4 py-2">Playlists</h2>
+          <div className="hidden md:flex items-center justify-between px-4 py-2">
+            <div className=""></div>
+            <div className="flex items-center gap-2 ">
+              <h2 className="text-secondary-text">Recents</h2>
+              <TfiMenuAlt className="size-8 text-secondary-text" />
+            </div>
           </div>
-        </div>
 
-        {/* Playlists */}
-        {session ? (
-          <div className="h-[calc(100vh-320px)] overflow-y-auto scroll">
+          {/* Playlists */}
+          {session ? (
+            <div className="flex-1 overflow-y-auto scroll">
             {isLoading ? (
               <>
                 {arraySkeleton.map((_, index) => (
@@ -164,19 +165,20 @@ function Sidebar({
               </div>
             )}
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center space-y-3">
-            <p className="text-primary-text text-lg font-bold">
-              You should login
-            </p>
-            <Link
-              href="/login"
-              className="font-semibold text-md bg-white py-3 px-6 rounded-full hover:scale-105 transition-all duration-300"
-            >
-              Login
-            </Link>
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center space-y-3">
+              <p className="text-primary-text text-lg font-bold">
+                You should login
+              </p>
+              <Link
+                href="/login"
+                className="font-semibold text-md bg-white py-3 px-6 rounded-full hover:scale-105 transition-all duration-300"
+              >
+                Login
+              </Link>
+            </div>
+          )}
+        </div>
       </aside>
     </>
   );
