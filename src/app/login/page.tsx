@@ -7,9 +7,10 @@ import React, { useState } from "react";
 import { createAuthClient } from "better-auth/client";
 import { useRouter } from "next/navigation";
 import { LuLoaderCircle } from "react-icons/lu";
+import { authClient } from "@/lib/actions/auth-client";
 
 function Login() {
-  const authClient = createAuthClient();
+
   const router = useRouter();
 
   const [email, setEmail] = useState("");

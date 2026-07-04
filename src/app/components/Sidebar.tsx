@@ -11,7 +11,6 @@ import Link from "next/link";
 import { FaTrash } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LuLoaderCircle } from "react-icons/lu";
-import { SongAPI } from "@/types/type";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { usePlaylist, useRemoveFromPlaylist } from "@/hooks/useHandlePlaylist";
 import { toast } from "sonner";
@@ -25,7 +24,7 @@ function Sidebar({
 }) {
   const { data: playlist, isLoading } = usePlaylist();
   const { mutate: removeSong, isPending, variables } = useRemoveFromPlaylist();
-  const { currentSongAPI, setCurrentSong } = usePlayerStore();
+  const { currentSongAPI, setCurrentSong, setSongsAPI } = usePlayerStore();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -123,7 +122,9 @@ function Sidebar({
                         } md:flex-row md:items-center justify-between  `}
                       >
                         <div
-                          onClick={() => setCurrentSong(song)}
+                          onClick={() => {
+                            setSongsAPI(playlist.songs ?? []);
+                            setCurrentSong(song)}}
                           className="flex items-center rounded-lg md:w-full gap-2 px-4 py-2 hover:bg-hover duration-300 cursor-pointer"
                         >
                           <Image

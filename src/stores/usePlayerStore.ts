@@ -10,8 +10,9 @@ interface PlayerStore {
   songsAPI: SongAPI[];
   currentSongAPI: SongAPI | null;
 
-  setIsPlaying: (value: boolean) => void;
+  setSongsAPI: (songs: SongAPI[]) => void;
   setCurrentSong: (song: SongAPI) => void;
+  setIsPlaying: (value: boolean) => void;
   setVolume: (value: number) => void;
   setRepeat: (value: boolean) => void;
   setRandom: (value: boolean) => void;
@@ -27,9 +28,13 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   songsAPI: [],
   currentSongAPI: null,
 
+  setSongsAPI: (songs) => {
+    set({ songsAPI: songs });
+  },
+  
   setCurrentSong: (song) => {
     sessionStorage.setItem("currentSong", JSON.stringify(song));
-    set({ currentSongAPI: song, isPlaying: true });
+    set({ currentSongAPI: song});
   },
 
   setIsPlaying: (value) => {

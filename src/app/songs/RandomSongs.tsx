@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRandomSong } from "@/hooks/useRandomSong";
+import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { SongAPI } from "@/types/type";
 import { LucideRefreshCcw } from "lucide-react";
@@ -10,9 +11,9 @@ import React from "react";
 import { FaPlay } from "react-icons/fa";
 
 function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
-  const { data, isLoading, isFetching, refetch } = useRandomSong();
+  const { data:random, isLoading, isFetching, refetch } = useRandomSong();
 
-  const { setCurrentSong } = usePlayerStore();
+  const { setSongsAPI,setCurrentSong } = usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
 
@@ -25,7 +26,7 @@ function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
         {isLoading ? (
           <>
             {arraySkeleton.map((_, index) => (
-              <div className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
+              <div key={index} className="flex-shrink-0 p-3 rounded-lg relative cursor-pointer hover:bg-hover group">
                 <div className="relative w-full aspect-square">
                   <Skeleton className="w-40 h-40" />
                 </div>
@@ -34,10 +35,12 @@ function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
           </>
         ) : (
           <>
-            {data?.map((song: SongAPI) => (
+            {random?.map((song: SongAPI) => (
               <div
                 key={song._id}
-                onClick={() => setCurrentSong(song)}
+                onClick={() => {
+                  setSongsAPI(random);
+                  setCurrentSong(song)}}
                 className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
                 <div className="relative w-full aspect-square">

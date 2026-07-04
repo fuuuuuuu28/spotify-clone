@@ -12,6 +12,7 @@ import { SongAPI } from "@/types/type";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
 import ArtistSongPopover from "../components/ArtistSongPopover";
+import { useMusicStore } from "@/stores/useMusicStore";
 
 type Session = typeof auth.$Infer.Session;
 function AllSongs({
@@ -23,7 +24,7 @@ function AllSongs({
   initialSongs: SongAPI[];
   randomSongs: SongAPI[];
 }) {
-  const { currentSongAPI, setCurrentSong, isPlaying } = usePlayerStore();
+  const { currentSongAPI, setCurrentSong, setSongsAPI, isPlaying } = usePlayerStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteSongs(initialSongs);
 // console.log("first", data)
@@ -32,6 +33,7 @@ function AllSongs({
 
   const arraySkeleton = Array.from({ length: 5 });
 
+  console.log(process.env.NODE_ENV === "production" ? process.env.BETTER_AUTH_URL : "http://localhost:3000");
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
@@ -135,7 +137,10 @@ function AllSongs({
             {songs.map((song, index) => (
               <div
                 key={song._id}
-                onClick={() => setCurrentSong(song)}
+                onClick={() => {
+                  setSongsAPI(songs);
+                  setCurrentSong(song)}
+                }
                 className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
                 <div className="relative w-full aspect-square">

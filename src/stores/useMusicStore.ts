@@ -11,10 +11,8 @@ interface MusicStore {
     songs: boolean;
   };
   error: string | null;
-  songsAPI: SongAPI[];
 
-  setSongsAPI: (songs: SongAPI[]) => void;
-
+  hydrateFromStorage: () => void;
 }
 
 export const useMusicStore = create<MusicStore>((set, get) => ({
@@ -22,9 +20,8 @@ export const useMusicStore = create<MusicStore>((set, get) => ({
     songs: false,
   },
   error: null,
-  songsAPI: [],
 
-  setSongsAPI: (songs) => {
-    set({ songsAPI: songs });
+    hydrateFromStorage: () => {
+
   },
 }));

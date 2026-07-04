@@ -2,6 +2,7 @@
 
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
+import { SongAPI } from "@/types/type";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { CiShuffle } from "react-icons/ci";
@@ -16,8 +17,8 @@ import {
 import { FaRepeat } from "react-icons/fa6";
 import { MdQueueMusic } from "react-icons/md";
 
-function MusicPlayer() {
-  const { songsAPI } = useMusicStore();
+function MusicPlayer({ initialSongs }: {initialSongs: SongAPI[]}) {
+  // const songsAPI = initialSongs;
   const {
     volume,
     setVolume,
@@ -27,6 +28,7 @@ function MusicPlayer() {
     setRandom,
     setIsPlaying,
     isPlaying,
+    songsAPI,
     setCurrentSong,
     currentSongAPI,
     hydrateFromStorage,
@@ -38,7 +40,7 @@ function MusicPlayer() {
   // const [isRandom, setIsRandom] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
+// console.log("s: ", songsAPI)
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -70,13 +72,25 @@ function MusicPlayer() {
     setProcess(
       (audioRef.current.currentTime / audioRef.current.duration) * 100,
     );
+    // setCurrentTime(audioRef.current.currentTime);
   };
+
+  // const handleLoadedMetadata = () => {
+
+  //   if (!audioRef.current) return;
+
+  //   audioRef.current.currentTime = currentTime;
+  //   setCurrentTime(audioRef.current.currentTime);
+
+  // }
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       const value = Number(e.target.value);
       audioRef.current.currentTime = (value / 100) * audioRef.current.duration;
+
       setProcess(value);
+      // setCurrentTime(process);
     }
   };
 
@@ -153,14 +167,14 @@ function MusicPlayer() {
   };
 
   useEffect(() => {
-  if (audioRef.current) {
-    audioRef.current.volume = volume / 100;
-  }
-}, [volume]);
+    if (audioRef.current) {
+      audioRef.current.volume = volume / 100;
+    }
+  }, [volume]);
 
-  useEffect(()=>{
-    hydrateFromStorage()
-  },[])
+  useEffect(() => {
+    hydrateFromStorage();
+  }, []);
 
   return (
     <div
@@ -194,9 +208,8 @@ function MusicPlayer() {
               className="hover:scale-110 hover:cursor-pointer transition"
             >
               <CiShuffle
-                className={`${
-                  isRandom ? "text-green-500" : "text-zinc-400"
-                } text-xl`}
+                className={`${isRandom ? "text-green-500" : "text-zinc-400"
+                  } text-xl`}
               />
             </button>
             <button
@@ -226,9 +239,8 @@ function MusicPlayer() {
               className="hover:scale-110 hover:cursor-pointer transition"
             >
               <FaRepeat
-                className={`${
-                  isRepeat ? "text-green-500" : "text-zinc-400"
-                } text-xl`}
+                className={`${isRepeat ? "text-green-500" : "text-zinc-400"
+                  } text-xl`}
               />
             </button>
           </div>
