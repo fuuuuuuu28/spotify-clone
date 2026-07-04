@@ -11,17 +11,26 @@ import React from "react";
 import { FaPlay } from "react-icons/fa";
 
 function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
-  const { data:random, isLoading, isFetching, refetch } = useRandomSong();
+  const { data: random, isLoading, isFetching, refetch } = useRandomSong();
 
-  const { setSongsAPI,setCurrentSong } = usePlayerStore();
+  const { setSongsAPI, setCurrentSong } = usePlayerStore();
 
   const arraySkeleton = Array.from({ length: 5 });
 
   return (
     <>
-      <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
-        Random songs
-      </h2>
+      <div className="flex items-center px-8 py-2">
+        <h2 className="px-8 py-2 text-primary-text text-3xl font-bold">
+          Random songs
+        </h2>
+        <Button
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="p-2 rounded hover:bg-hover hover:cursor-pointer"
+        >
+          <LucideRefreshCcw className={`${isFetching ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
       <div className="flex items-center overflow-x-auto gap-2 p-4 scroll">
         {isLoading ? (
           <>
@@ -40,7 +49,8 @@ function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
                 key={song._id}
                 onClick={() => {
                   setSongsAPI(random);
-                  setCurrentSong(song)}}
+                  setCurrentSong(song)
+                }}
                 className="flex-shrink-0 w-[185px] p-3 rounded-lg relative cursor-pointer hover:bg-hover group"
               >
                 <div className="relative w-full aspect-square">
@@ -65,13 +75,6 @@ function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
             ))}
           </>
         )}
-        <Button
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="p-2 rounded hover:bg-hover hover:cursor-pointer"
-        >
-          <LucideRefreshCcw className={`${isFetching ? "animate-spin" : ""}`} />
-        </Button>
       </div>
     </>
   );

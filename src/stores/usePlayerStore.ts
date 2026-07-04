@@ -5,7 +5,7 @@ interface PlayerStore {
   volume: number;
   isRepeat: boolean;
   isRandom: boolean;
-  lastPlayedSongId: string | null;
+  // lastPlayedSongId: string | null;
   isPlaying: boolean;
   songsAPI: SongAPI[];
   currentSongAPI: SongAPI | null;
@@ -23,7 +23,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   volume: 75,
   isRepeat: false,
   isRandom: false,
-  lastPlayedSongId: null,
+  // lastPlayedSongId: null,
   isPlaying: false,
   songsAPI: [],
   currentSongAPI: null,
@@ -34,7 +34,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   
   setCurrentSong: (song) => {
     sessionStorage.setItem("currentSong", JSON.stringify(song));
-    set({ currentSongAPI: song});
+    set({ currentSongAPI: song, isPlaying: true });
   },
 
   setIsPlaying: (value) => {

@@ -24,17 +24,36 @@ export async function fetchSongs(page: number = 1) {
 
 export async function fetchRandomSong() {
   try {
-    const randomPage = Math.floor(Math.random() * 15) + 1;
-    // console.log("first", randomPage);
-    const res = await fetch(
-      `https://v2-api-kaito-music.vercel.app/api/music/top-views?_limit=20&_page=${randomPage}&_type=million`,
-      { next: { revalidate: 60 } },
-    );
+    const totalPages = 15;
 
-    if (!res.ok) return [];
+    // 1. Tạo một mảng chứa 15 promise fetch tương ứng với 15 trang
+    const fetchPromises = Array.from({ length: totalPages }, (_, i) => {
+      const page = i + 1;
+      return fetch(
+        `https://v2-api-kaito-music.vercel.app/api/music/top-views?_limit=20&_page=${page}&_type=million`,
+        { next: { revalidate: 60 } },
+      ).then((res) => (res.ok ? res.json() : null));
+    });
+    // 2. Chạy đồng thời tất cả các request
+    const results = await Promise.all(fetchPromises);
+    // console.log("res: ",results)
 
-    const data = await res.json();
-    return data?.data ?? [];
+    // 3. Gộp tất cả các mảng dữ liệu (data.data) từ các trang lại làm một
+    let allSongs: any[] = [];
+    for (const result of results) {
+      if (result && result.data) {
+        allSongs = allSongs.concat(result.data);
+      }
+    }
+    // console.log("pre allsongs: ",allSongs)
+
+    // 4. Trộn ngẫu nhiên vị trí các phần tử bằng thuật toán Fisher-Yates
+    for (let i = allSongs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allSongs[i], allSongs[j]] = [allSongs[j], allSongs[i]]; // Đổi chỗ 2 phần tử
+    }
+    // console.log("allsong: ",allSongs)
+    return allSongs.slice(0, 20); // Lấy 20 bài hát ngẫu nhiên
   } catch (error) {
     console.error("fetchRandomSong error:", error);
     return [];
@@ -71,12 +90,12 @@ export async function fetchSongByArtist(artist: string) {
       { next: { revalidate: 60 } },
     );
 
-    if(!res.ok) return[];
-    
+    if (!res.ok) return [];
+
     const data = await res.json();
-    return data?.data??[];
+    return data?.data ?? [];
   } catch (error) {
-    console.error("fetchSongByArtist:",error);
+    console.error("fetchSongByArtist:", error);
     return [];
   }
 }
