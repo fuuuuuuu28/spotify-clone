@@ -11,7 +11,6 @@ type Session = typeof auth.$Infer.Session;
 export async function ClientLayout({
   children,
   session,
-  initialSongs,
 }: Readonly<{ children: React.ReactNode; session: Session | null, initialSongs: SongAPI[]}>) {
 
   return (
