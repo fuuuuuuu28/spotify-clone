@@ -1,9 +1,4 @@
-import { getChatHistory, reqChatbot } from "@/lib/actions/chatbot-actions";
-import {
-  addToPlaylist,
-  removeFromPlaylist,
-} from "@/lib/actions/playlists-actions";
-import { Message, Playlist, Song, SongAPI } from "@/types/type";
+
 import { create } from "zustand";
 
 interface MusicStore {
@@ -15,7 +10,7 @@ interface MusicStore {
   hydrateFromStorage: () => void;
 }
 
-export const useMusicStore = create<MusicStore>((set, get) => ({
+export const useMusicStore = create<MusicStore>(() => ({
   isLoading: {
     songs: false,
   },

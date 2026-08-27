@@ -12,13 +12,11 @@ import { SongAPI } from "@/types/type";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useInfiniteSongs } from "@/hooks/useInfiniteSongs";
 import ArtistSongPopover from "../components/ArtistSongPopover";
-import { useMusicStore } from "@/stores/useMusicStore";
 
 type Session = typeof auth.$Infer.Session;
 function AllSongs({
   session,
   initialSongs,
-  randomSongs,
 }: {
   session: Session | null;
   initialSongs: SongAPI[];
@@ -134,7 +132,7 @@ function AllSongs({
           </>
         ) : (
           <>
-            {songs.map((song, index) => (
+            {songs.map((song) => (
               <div
                 key={song._id}
                 onClick={() => {
@@ -179,7 +177,7 @@ function AllSongs({
       </div>
 
       {/*Random Music */}
-      <RandomSongs randomSongs={randomSongs} />
+      <RandomSongs />
     </div>
   );
 }

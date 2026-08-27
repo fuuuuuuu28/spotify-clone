@@ -1,6 +1,5 @@
 "use client";
 import { uploadSong } from "@/lib/actions/songs-actions";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -37,7 +36,7 @@ function Upload() {
       setArtist("");
       setImage(null);
       setAudio(null);
-    } catch (err: any) {
+    } catch (err:unknown) {
       console.error(err);
       setMessage(err.response?.data?.error || "Upload failed");
     }

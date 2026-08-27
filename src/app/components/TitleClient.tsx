@@ -1,6 +1,6 @@
 "use client"
 import { usePlayerStore } from '@/stores/usePlayerStore'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 function TitleClient() {
     const currentSong = usePlayerStore((state) => state.currentSongAPI);

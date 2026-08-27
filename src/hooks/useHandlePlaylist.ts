@@ -3,9 +3,8 @@ import {
   fetchPlaylist,
   removeFromPlaylist,
 } from "@/lib/actions/playlists-actions";
-import { Playlist, SongAPI } from "@/types/type";
+import { SongAPI } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 
 export function usePlaylist() {
   return useQuery({
@@ -28,9 +27,9 @@ export function useAddToPlaylist() {
     onMutate: async (song) => {
       await queryClient.cancelQueries({ queryKey: ["playlist"] });
 
-      const prev = queryClient.getQueryData<any>(["playlist"]);
+      const prev = queryClient.getQueryData<unknown>(["playlist"]);
 
-      queryClient.setQueryData(["playlist"], (old: any) => {
+      queryClient.setQueryData(["playlist"], (old: unknown) => {
         if (!old) return old;
 
         // tránh add trùng
@@ -70,9 +69,9 @@ export function useRemoveFromPlaylist() {
     onMutate: async (songId) => {
       await queryClient.cancelQueries({ queryKey: ["playlist"] });
 
-      const prev = queryClient.getQueryData<any>(["playlist"]);
+      const prev = queryClient.getQueryData<unknown>(["playlist"]);
 
-      queryClient.setQueryData(["playlist"], (old: any) => {
+      queryClient.setQueryData(["playlist"], (old: unknown) => {
         if (!old) return old;
         return {
           ...old,

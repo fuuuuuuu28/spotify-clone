@@ -18,8 +18,8 @@ export async function uploadSong(formData: FormData) {
     const title = formData.get("title") as string;
     const artist = formData.get("artist") as string;
 
-    const image = formData.get("imageFile") as any;
-    const audio = formData.get("audioFile") as any;
+    const image = formData.get("imageFile") as unknown;
+    const audio = formData.get("audioFile") as unknown;
 
     if (!title || !artist || !userId || !image || !audio) {
       throw new Error("Missing fields");

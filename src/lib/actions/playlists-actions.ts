@@ -5,13 +5,12 @@ import { auth } from "../auth";
 import { headers } from "next/headers";
 import { Playlist, Song } from "@/models/model";
 import { Types } from "mongoose";
-import { revalidatePath } from "next/cache";
 
 //SSR phải sử dụng types do sử dụng Array of object chứ không phải Single object
 type PlaylistType = {
   _id: Types.ObjectId;
   user_id: Types.ObjectId;
-  songs: any[];
+  songs: unknown[];
 };
 
 type SongType = {
@@ -47,7 +46,7 @@ export async function fetchPlaylist() {
     ...playlist,
     _id: playlist?._id.toString(),
     user_id: playlist?.user_id.toString(),
-    songs: playlist?.songs.map((song: any) => ({
+    songs: playlist?.songs.map((song: unknown) => ({
       ...song,
       _id: song._id.toString(),
     })),
@@ -113,7 +112,7 @@ export async function removeFromPlaylist(songId: string) {
 
   await connectionToDatabase();
   // console.log("songId", songId);
-  const res = await Playlist.findOneAndUpdate(
+  await Playlist.findOneAndUpdate(
     { user_id:userId },
     { $pull: { songs: songId } },
     { new: true },

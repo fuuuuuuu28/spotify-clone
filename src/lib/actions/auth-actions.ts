@@ -2,7 +2,6 @@
 
 import { headers } from "next/headers";
 import { auth } from "../auth";
-import { success } from "better-auth";
 
 export const signUp = async (email: string, password: string, name: string) => {
   try {
@@ -14,7 +13,7 @@ export const signUp = async (email: string, password: string, name: string) => {
       },
     });
     return {data: result};
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("lib/auth-action/signUp error", error.body.message);
     return {error: error.body.message}
   }
@@ -29,7 +28,7 @@ export const signIn = async (email: string, password: string) => {
       },
     });
     return {data: result};
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("lib/auth-action/signIp error", error.body.message);
     return {error: error.body.message}
   }

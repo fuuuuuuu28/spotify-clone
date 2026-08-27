@@ -1,8 +1,6 @@
 "use client";
 
-import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { SongAPI } from "@/types/type";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { CiShuffle } from "react-icons/ci";
@@ -17,8 +15,7 @@ import {
 import { FaRepeat } from "react-icons/fa6";
 import { MdQueueMusic } from "react-icons/md";
 
-function MusicPlayer({ initialSongs }: {initialSongs: SongAPI[]}) {
-  // const songsAPI = initialSongs;
+function MusicPlayer() {
   const {
     volume,
     setVolume,
@@ -162,7 +159,7 @@ function MusicPlayer({ initialSongs }: {initialSongs: SongAPI[]}) {
 
   useEffect(() => {
     hydrateFromStorage();
-  }, []);
+  }, [hydrateFromStorage]);
 
   return (
     <div

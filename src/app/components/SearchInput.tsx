@@ -1,22 +1,19 @@
-import React, { useState } from "react";
-import { useDebounce } from "./utils/useDebounce";
-import useSearchSong from "@/hooks/useSearchSong";
+import React from "react";
 import { GoSearch } from "react-icons/go";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { SongAPI } from "@/types/type";
-import { usePlayerStore } from "@/stores/usePlayerStore";
 
-type SearchInputType={
-  keyword:string;
+type SearchInputType = {
+  keyword: string;
   setKeyword: React.Dispatch<React.SetStateAction<string>>;
-  open:boolean;
+  open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  data:SongAPI[] | undefined;
+  data: SongAPI[] | undefined;
   isLoading: boolean;
-  setCurrentSong:(song:SongAPI) => void;
+  setCurrentSong: (song: SongAPI) => void;
 }
-function SearchInput({keyword, setKeyword, open,setOpen, data, isLoading, setCurrentSong}: SearchInputType) {
+function SearchInput({ keyword, setKeyword, open, setOpen, data, isLoading, setCurrentSong }: SearchInputType) {
   // const [keyword, setKeyword] = useState("");
   // const [open, setOpen] = useState(false);
 
@@ -25,7 +22,7 @@ function SearchInput({keyword, setKeyword, open,setOpen, data, isLoading, setCur
   // const { data, isLoading } = useSearchSong(debounceKeyword);
   //   const { setCurrentSong } = usePlayerStore();
 
-    const arraySkeleton = Array.from({ length: 5 });
+  const arraySkeleton = Array.from({ length: 5 }, (_, index) => index);
   return (
     <>
       {/* Search function */}
@@ -39,7 +36,7 @@ function SearchInput({keyword, setKeyword, open,setOpen, data, isLoading, setCur
           onChange={(e) => setKeyword(e.target.value)}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 100)}
-          // onKeyPress={handlePress}
+        // onKeyPress={handlePress}
         />
       </div>
       {/* Render kết quả */}
@@ -52,8 +49,8 @@ function SearchInput({keyword, setKeyword, open,setOpen, data, isLoading, setCur
           keyword.trim() !== "" &&
           (isLoading ? (
             <div>
-              {arraySkeleton.map((_, index) => (
-                <div className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2">
+              {arraySkeleton.map((index) => (
+                <div key={index} className="flex items-center gap-4 bg-background-theme m-4 p-4 text-secondary-text rounded-lg my-2">
                   <Skeleton className="h-10 w-10" />
                   <Skeleton className="w-60 h-5" />
                 </div>

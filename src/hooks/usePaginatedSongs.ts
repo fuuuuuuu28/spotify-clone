@@ -1,5 +1,4 @@
 import { fetchSongs } from "@/lib/api/song-api";
-import { SongAPI } from "@/types/type";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export function usePaginatedSongs(page: number) {

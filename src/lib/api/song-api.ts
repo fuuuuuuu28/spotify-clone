@@ -39,7 +39,7 @@ export async function fetchRandomSong() {
     // console.log("res: ",results)
 
     // 3. Gộp tất cả các mảng dữ liệu (data.data) từ các trang lại làm một
-    let allSongs: any[] = [];
+    let allSongs: unknown[] = [];
     for (const result of results) {
       if (result && result.data) {
         allSongs = allSongs.concat(result.data);

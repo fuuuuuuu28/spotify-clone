@@ -1,6 +1,5 @@
 
 import { ClientLayout } from "@/layouts/ClientLayout";
-import Playlist from "./playlist/page";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import AllSongs from "./songs/AllSongs";

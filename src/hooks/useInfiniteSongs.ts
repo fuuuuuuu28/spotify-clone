@@ -1,7 +1,6 @@
 import { fetchSongs } from '@/lib/api/song-api'
 import { SongAPI } from '@/types/type'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import React from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 export function useInfiniteSongs(initialSongs:SongAPI[]){
   return useInfiniteQuery({

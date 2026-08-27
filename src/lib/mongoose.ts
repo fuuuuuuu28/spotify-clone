@@ -7,13 +7,13 @@ if (!MONGODB_URL) {
   throw new Error("❌ Missing MONGO_URL in env");
 }
 
-let cached = (global as any).mongoose as {
+let cached = (global as unknown).mongoose as {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
 };
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  cached = (global as unknown).mongoose = { conn: null, promise: null };
 }
 
 export async function connectionToDatabase() {

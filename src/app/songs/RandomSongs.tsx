@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRandomSong } from "@/hooks/useRandomSong";
-import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { SongAPI } from "@/types/type";
 import { LucideRefreshCcw } from "lucide-react";
@@ -10,7 +9,7 @@ import Image from "next/image";
 import React from "react";
 import { FaPlay } from "react-icons/fa";
 
-function RandomSongs({ randomSongs = [] }: { randomSongs: SongAPI[] }) {
+function RandomSongs() {
   const { data: random, isLoading, isFetching, refetch } = useRandomSong();
 
   const { setSongsAPI, setCurrentSong } = usePlayerStore();

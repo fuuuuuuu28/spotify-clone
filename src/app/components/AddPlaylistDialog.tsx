@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,9 +21,6 @@ function AddPlaylistDialog() {
   const { data: playlist } = usePlaylist();
   const { mutate: addSong, isPending, variables } = useAddToPlaylist();
   const { data:songPages, isFetching } = usePaginatedSongs(page);
-
-  const totalPages = songPages?.totalPages ?? 1;
-  // console.log("first: ",songs)
 
   const isAddingSong = (songId: string) =>
     isPending && variables?._id === songId;

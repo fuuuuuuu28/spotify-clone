@@ -4,7 +4,6 @@ import { signIn } from "@/lib/actions/auth-actions";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { createAuthClient } from "better-auth/client";
 import { useRouter } from "next/navigation";
 import { LuLoaderCircle } from "react-icons/lu";
 import { authClient } from "@/lib/actions/auth-client";

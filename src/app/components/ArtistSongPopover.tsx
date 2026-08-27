@@ -1,14 +1,13 @@
-import { Button } from "@/components/ui/button";
+
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistSongs } from "@/hooks/useArtistSong";
 import { SongAPI } from "@/types/type";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 function ArtistSongPopover({ artist }: { artist: string }) {
   const [open, setOpen] = useState(false);
