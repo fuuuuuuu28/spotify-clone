@@ -1,4 +1,3 @@
-
 import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URL = process.env.MONGO_URL!;
@@ -7,14 +6,19 @@ if (!MONGODB_URL) {
   throw new Error("❌ Missing MONGO_URL in env");
 }
 
-let cached = (global as unknown).mongoose as {
-  conn: Mongoose | null;
-  promise: Promise<Mongoose> | null;
+const globalForMongoose = global as typeof globalThis & {
+  mongoose?: {
+    conn: Mongoose | null;
+    promise: Promise<Mongoose> | null;
+  };
 };
 
-if (!cached) {
-  cached = (global as unknown).mongoose = { conn: null, promise: null };
-}
+const cached =
+  globalForMongoose.mongoose ??
+  (globalForMongoose.mongoose = {
+    conn: null,
+    promise: null,
+  });
 
 export async function connectionToDatabase() {
   if (cached.conn) {
@@ -38,5 +42,5 @@ export async function connectionToDatabase() {
   }
 
   cached.conn = await cached.promise;
-  return cached.conn;
+  return cached?.conn;
 }

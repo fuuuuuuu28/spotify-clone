@@ -3,7 +3,7 @@ import {
   fetchPlaylist,
   removeFromPlaylist,
 } from "@/lib/actions/playlists-actions";
-import { SongAPI } from "@/types/type";
+import { Playlist, SongAPI } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function usePlaylist() {
@@ -29,7 +29,7 @@ export function useAddToPlaylist() {
 
       const prev = queryClient.getQueryData<unknown>(["playlist"]);
 
-      queryClient.setQueryData(["playlist"], (old: unknown) => {
+      queryClient.setQueryData(["playlist"], (old: Playlist) => {
         if (!old) return old;
 
         // tránh add trùng
@@ -71,7 +71,7 @@ export function useRemoveFromPlaylist() {
 
       const prev = queryClient.getQueryData<unknown>(["playlist"]);
 
-      queryClient.setQueryData(["playlist"], (old: unknown) => {
+      queryClient.setQueryData(["playlist"], (old: Playlist) => {
         if (!old) return old;
         return {
           ...old,

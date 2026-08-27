@@ -20,7 +20,6 @@ function AllSongs({
 }: {
   session: Session | null;
   initialSongs: SongAPI[];
-  randomSongs: SongAPI[];
 }) {
   const { currentSongAPI, setCurrentSong, setSongsAPI, isPlaying } = usePlayerStore();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =

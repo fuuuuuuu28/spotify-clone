@@ -1,4 +1,5 @@
 import { getChatHistory, reqChatbot } from "@/lib/actions/chatbot-actions";
+import { Message } from "@/types/type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useChatHistory() {
@@ -19,7 +20,7 @@ export function useAskToChatbot() {
     onMutate: async (prompt:string) => {
       await queryClient.cancelQueries({ queryKey: ["chatbot"] });
 
-      const prev = queryClient.getQueryData<unknown>(["chatbot"]);
+      const prev = queryClient.getQueryData<Message[]>(["chatbot"]) ?? [];
       const optimisticMessage = {
         _id: `temp-${Date.now()}`,
         role: "user",

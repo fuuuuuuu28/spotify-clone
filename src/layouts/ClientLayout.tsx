@@ -21,7 +21,7 @@ export async function ClientLayout({
         <Sidebar session={session}/>
         {children}
       </main>
-      <MusicPlayer initialSongs={initialSongs} />
+      <MusicPlayer/>
     </div>
   );
 }

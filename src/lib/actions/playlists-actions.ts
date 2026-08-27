@@ -5,12 +5,13 @@ import { auth } from "../auth";
 import { headers } from "next/headers";
 import { Playlist, Song } from "@/models/model";
 import { Types } from "mongoose";
+import { SongAPI } from "@/types/type";
 
 //SSR phải sử dụng types do sử dụng Array of object chứ không phải Single object
 type PlaylistType = {
   _id: Types.ObjectId;
   user_id: Types.ObjectId;
-  songs: unknown[];
+  songs: SongAPI[];
 };
 
 type SongType = {
@@ -46,7 +47,7 @@ export async function fetchPlaylist() {
     ...playlist,
     _id: playlist?._id.toString(),
     user_id: playlist?.user_id.toString(),
-    songs: playlist?.songs.map((song: unknown) => ({
+    songs: playlist?.songs.map((song: SongAPI) => ({
       ...song,
       _id: song._id.toString(),
     })),

@@ -1,5 +1,7 @@
 "use server";
 
+import { SongAPI } from "@/types/type";
+
 export async function fetchSongs(page: number = 1) {
   try {
     const res = await fetch(
@@ -39,7 +41,7 @@ export async function fetchRandomSong() {
     // console.log("res: ",results)
 
     // 3. Gộp tất cả các mảng dữ liệu (data.data) từ các trang lại làm một
-    let allSongs: unknown[] = [];
+    let allSongs: SongAPI[] = [];
     for (const result of results) {
       if (result && result.data) {
         allSongs = allSongs.concat(result.data);
