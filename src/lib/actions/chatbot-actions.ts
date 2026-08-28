@@ -53,7 +53,7 @@ export async function reqChatbot(prompt: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "stepfun/step-3.5-flash:free",
+      model: "nvidia/nemotron-3-ultra-550b-a55b:free",
       messages: [
         {
           role: "system",

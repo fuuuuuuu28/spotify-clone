@@ -17,7 +17,7 @@ export function useAskToChatbot() {
     mutationFn: async (prompt: string) => {
       return reqChatbot(prompt);
     },
-    onMutate: async (prompt:string) => {
+    onMutate: async (prompt: string) => {
       await queryClient.cancelQueries({ queryKey: ["chatbot"] });
 
       const prev = queryClient.getQueryData<Message[]>(["chatbot"]) ?? [];
@@ -27,21 +27,18 @@ export function useAskToChatbot() {
         content: prompt,
       };
 
-      queryClient.setQueryData(["chatbot"], [
-        ...prev,
-        optimisticMessage,
-      ]);
+      queryClient.setQueryData(["chatbot"], [...prev, optimisticMessage]);
 
       return { prev };
     },
     onError: (err, prompt, ctx) => {
       if (ctx?.prev) {
-        queryClient.setQueryData(["playlist"], ctx.prev);
+        queryClient.setQueryData(["chatbot"], ctx.prev);
       }
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["playlist"] });
+      queryClient.invalidateQueries({ queryKey: ["chatbot"] });
     },
   });
 }
